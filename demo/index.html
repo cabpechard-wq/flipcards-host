@@ -378,37 +378,49 @@ body { padding: 1.5rem 1rem 3.5rem; background: #ffffff; }
   position: relative;
 }
 .fiche-hover {
-  position: absolute; inset: 0;
-  z-index: 6;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -46%) scale(.98);
+  z-index: 8;
+  width: min(92%, 24rem);
+  max-height: min(70%, 20rem);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   display: flex;
   flex-direction: column;
-  gap: .65rem;
-  padding: 1.75rem 2rem;
+  gap: .55rem;
+  padding: .85rem 1rem;
   overflow: auto;
   overscroll-behavior: contain;
-  background: rgba(255, 255, 255, .98);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  background: #fffef9;
+  border: 1px solid #e7e2d6;
+  border-radius: 12px;
+  box-shadow:
+    0 1px 2px rgba(28, 25, 23, .06),
+    0 14px 32px rgba(28, 25, 23, .16);
   box-sizing: border-box;
   text-align: left;
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
   cursor: default;
-  transition: opacity .15s ease, visibility .15s ease;
+  transition: opacity .15s ease, visibility .15s ease, transform .15s ease;
+}
+.fiche-hover::after {
+  content: none;
 }
 .stage.is-fiche-peek .fiche-hover.has-content {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
 }
 .fiche-hover h4 {
-  margin: 0 0 .2rem;
+  margin: 0 0 .15rem;
   font-family: var(--font-display);
-  font-size: .72rem;
+  font-size: .68rem;
   font-weight: 700;
   letter-spacing: .06em;
   text-transform: uppercase;
@@ -417,25 +429,22 @@ body { padding: 1.5rem 1rem 3.5rem; background: #ffffff; }
 .fiche-hover p {
   margin: 0;
   font-family: var(--font-ui);
-  font-size: .82rem;
+  font-size: .8rem;
   font-weight: 500;
-  line-height: 1.45;
+  line-height: 1.42;
   color: #1f2937;
   -webkit-user-select: none;
   user-select: none;
 }
 .fiche-hover p.is-empty { color: var(--muted); font-style: italic; }
-.fiche-hint {
-  margin: .35rem 0 0;
-  font-size: .68rem;
-  color: var(--muted);
-  text-align: center;
-  letter-spacing: .02em;
-}
 .flip-scene.is-flipped { cursor: help; }
 .stage.is-fiche-peek { cursor: default; }
 @media (max-width: 720px) {
-  .fiche-hover { padding: 1.35rem 1.4rem; }
+  .fiche-hover {
+    width: min(94%, 20rem);
+    max-height: min(75%, 16rem);
+    padding: .75rem .85rem;
+  }
 }
 .controls {
   width: 100%;
@@ -745,7 +754,6 @@ body { padding: 1.5rem 1rem 3.5rem; background: #ffffff; }
               <h4>Perspectives</h4>
               <p id="fiche-perspective"></p>
             </div>
-            <p class="fiche-hint">Survol · lecture seule · non sélectionnable</p>
           </div>
         </div>
         <div class="study-under" id="controls-wrap">
