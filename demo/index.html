@@ -335,6 +335,8 @@ body { padding: 0 0 3.5rem; background: #ffffff; }
   flex-direction: column;
   gap: .65rem;
   width: 100%;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .study-main.is-open .study-details { display: flex; }
 .study-under {
@@ -349,6 +351,8 @@ body { padding: 0 0 3.5rem; background: #ffffff; }
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: .75rem .85rem .85rem;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .detail-box h3 {
   margin: 0 0 .45rem;
@@ -364,10 +368,25 @@ body { padding: 0 0 3.5rem; background: #ffffff; }
   line-height: 1.45;
   color: #374151;
   white-space: pre-wrap;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .detail-box p.is-empty {
   color: var(--muted);
   font-style: italic;
+}
+.face,
+.face .term,
+.face .def,
+.verso-title,
+.face-stars {
+  -webkit-user-select: none;
+  user-select: none;
+}
+.terms,
+.term-row {
+  -webkit-user-select: none;
+  user-select: none;
 }
 .btn-details {
   appearance: none;
@@ -1655,13 +1674,18 @@ document.querySelectorAll("[data-clear]").forEach(btn => {
   });
 });
 
-if (ficheHover) {
+function blockCopyOn(el) {
+  if (!el) return;
   ["copy", "cut", "contextmenu", "selectstart", "dragstart"].forEach((ev) => {
-    ficheHover.addEventListener(ev, (e) => {
+    el.addEventListener(ev, (e) => {
       e.preventDefault();
       e.stopPropagation();
     });
   });
+}
+
+if (ficheHover) {
+  blockCopyOn(ficheHover);
   // Clic sur la fiche : ne retourne pas la carte (lecture)
   ficheHover.addEventListener("click", (e) => {
     e.preventDefault();
@@ -1669,6 +1693,9 @@ if (ficheHover) {
   });
   ficheHover.addEventListener("mousedown", (e) => e.stopPropagation());
 }
+blockCopyOn(document.getElementById("study-details"));
+blockCopyOn(document.getElementById("card"));
+blockCopyOn(document.getElementById("terms-list"));
 
 /* Survol fiche hors du rotateY (overlay sur .stage) */
 let pointerOverStage = false;
