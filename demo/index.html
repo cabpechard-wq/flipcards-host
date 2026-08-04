@@ -1118,6 +1118,47 @@ function cascadeTagSets(opts) {
   return { themes: outThemes, notions: outNotions, importance: outImportance };
 }
 
+function importanceLevelsWhere(pred) {
+  const levels = new Set();
+  for (const card of DATA) {
+    if (!pred(card)) continue;
+    const lvl = Number(card.importance_level) || 0;
+    if (lvl) levels.add(String(lvl));
+  }
+  return levels;
+}
+
+function intersectSets(sets) {
+  if (!sets.length) return new Set();
+  let acc = new Set(sets[0]);
+  for (let i = 1; i < sets.length; i++) {
+    const other = sets[i];
+    acc = new Set([...acc].filter(v => other.has(v)));
+  }
+  return acc;
+}
+
+/**
+ * ★ disponibles : uniquement réduction.
+ * Le lot cartes reste en OU sur les notions, mais les capsules Importance
+ * = intersection des ★ de chaque notion (sous le thème) — ajouter une
+ * notion ne peut jamais rouvrir un niveau d'étoiles.
+ */
+function availableImportanceLevels() {
+  const themes = selectedList("theme");
+  const notions = selectedList("notion");
+  const inTheme = (card) =>
+    !themes.length || (card.themes || []).some(t => themes.includes(t));
+  if (!notions.length) return importanceLevelsWhere(inTheme);
+  return intersectSets(
+    notions.map(n =>
+      importanceLevelsWhere(
+        card => inTheme(card) && (card.notions || []).includes(n)
+      )
+    )
+  );
+}
+
 function updateChipAvailability() {
   const present = tagsPresentInData();
   const themeExclusive = selected.theme.size > 0;
@@ -1160,11 +1201,11 @@ function updateChipAvailability() {
     btn.setAttribute("aria-disabled", ok ? "false" : "true");
   });
 
-  // Étoiles : réduites par thème + notions ; cumul multi-★
-  const starScope = cascadeTagSets({ ignoreImportance: true });
+  // Étoiles : réduction stricte (intersection par notion), cumul multi-★ dans ce plafond
+  const starOk = availableImportanceLevels();
   document.querySelectorAll('.chip[data-group="importance"]').forEach(btn => {
     const value = btn.dataset.value;
-    const ok = starScope.importance.has(value);
+    const ok = starOk.has(value);
     if (selected.importance.has(value) && !ok) {
       selected.importance.delete(value);
       btn.setAttribute("aria-pressed", "false");
