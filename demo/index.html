@@ -230,6 +230,9 @@ body { padding: 0 0 3.5rem; background: #ffffff; }
 .game-bar {
   display: flex; flex-wrap: wrap; align-items: center;
   justify-content: space-between; gap: .75rem; margin-bottom: 1.15rem;
+  position: relative;
+  z-index: 60;
+  overflow: visible;
 }
 .btn-back {
   appearance: none; border: 0; background: none; padding: 0;
@@ -240,6 +243,8 @@ body { padding: 0 0 3.5rem; background: #ffffff; }
   font-size: .82rem; color: var(--muted); font-weight: 500;
   text-align: right; max-width: 28rem;
   line-height: 1.45;
+  position: relative;
+  overflow: visible;
 }
 .game-summary-bit {
   position: relative;
@@ -248,11 +253,18 @@ body { padding: 0 0 3.5rem; background: #ffffff; }
   color: var(--ink);
   border-bottom: 1px dotted #9ca3af;
 }
+.game-summary-bit.is-open .game-summary-tip,
+.game-summary-bit:hover .game-summary-tip,
+.game-summary-bit:focus-within .game-summary-tip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
 .game-summary-tip {
   position: absolute;
   right: 0;
-  top: calc(100% + .4rem);
-  z-index: 50;
+  top: calc(100% + .45rem);
+  z-index: 70;
   min-width: 8rem;
   max-width: min(18rem, 70vw);
   padding: .55rem .7rem;
@@ -260,7 +272,7 @@ body { padding: 0 0 3.5rem; background: #ffffff; }
   color: #1f2937;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, .12);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, .14);
   font-size: .78rem;
   font-weight: 500;
   line-height: 1.4;
@@ -281,12 +293,6 @@ body { padding: 0 0 3.5rem; background: #ffffff; }
   border-left: 1px solid #e5e7eb;
   border-top: 1px solid #e5e7eb;
   transform: rotate(45deg);
-}
-.game-summary-bit:hover .game-summary-tip,
-.game-summary-bit:focus-within .game-summary-tip {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
 }
 .game-summary-tip li {
   margin: 0;
@@ -1193,6 +1199,15 @@ function renderGameSummary({ random10 = false, n = 0, poolSize = 0 } = {}) {
   });
   chunks.push('<span class="game-summary-static">' + n + " carte(s)</span>");
   gameSummary.innerHTML = chunks.join('<span class="game-summary-sep"> · </span>');
+  // Clic / focus : utile tactile ; hover CSS pour desktop
+  gameSummary.querySelectorAll(".game-summary-bit").forEach(bit => {
+    bit.addEventListener("click", (e) => {
+      e.preventDefault();
+      const open = bit.classList.contains("is-open");
+      gameSummary.querySelectorAll(".game-summary-bit.is-open").forEach(b => b.classList.remove("is-open"));
+      if (!open) bit.classList.add("is-open");
+    });
+  });
 }
 
 function updateHomeCount() {
