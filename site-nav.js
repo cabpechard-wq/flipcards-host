@@ -26,6 +26,7 @@
     '<nav class="site-nav-links" aria-label="Navigation">' +
       '<a data-nav="home" href="' + abs("index.html") + '">Accueil</a>' +
       '<a data-nav="demo" href="' + abs("demo/") + '">Démo</a>' +
+      '<a data-nav="gada" href="' + abs("gada/app.html") + '">Flipcards</a>' +
       '<a data-nav="checkout" href="' + abs("checkout/") + '">Abonnements</a>' +
       '<span class="site-nav-guest">' +
         '<a data-nav="membre" href="' + abs("membre/") + '">Connexion</a>' +
