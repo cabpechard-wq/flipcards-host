@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
+<meta http-equiv="Cache-Control" content="no-cache">
 <title>Paiement reçu — Flipcards</title>
 <style>
 :root { --ink:#1a1a1a; --muted:#6b7280; --accent:#0f766e; --bg:#f8faf9; --card:#fff; --border:#e5e7eb; }
@@ -18,36 +19,33 @@ a.btn { display:inline-block; margin:.4rem .4rem .4rem 0; background:var(--accen
   font-family:system-ui,sans-serif; font-weight:600; padding:.7rem 1rem; border-radius:8px; }
 a.btn.secondary { background:#fff; color:var(--accent); border:1px solid var(--accent); }
 .callout { background:#ecfdf5; border:1px solid #a7f3d0; border-radius:8px; padding:.9rem 1rem; margin:1rem 0; }
-.warn { background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:.9rem 1rem; margin:1rem 0; }
+.note { font-family:system-ui,sans-serif; font-size:.85rem; color:var(--muted); margin-top:1.2rem; }
 </style>
 </head>
 <body>
   <main class="box">
     <h1>Paiement reçu</h1>
-    <p>Merci — ton abonnement Flipcards (grands arrêts du droit public et administratif) est enregistré côté Stripe.</p>
+    <p>Merci — ton abonnement est actif. Tu peux ouvrir les flipcards tout de suite sur cet appareil.</p>
     <div class="callout">
-      <p style="margin:0;color:var(--ink)"><strong>Accès flipcards</strong></p>
-      <p style="margin:.4rem 0 0">Connecte-toi sur l’espace abonné avec l’e-mail utilisé chez Stripe et ton mot de passe d’accès.</p>
+      <p style="margin:0;color:var(--ink)"><strong>1. Accès immédiat</strong></p>
+      <p style="margin:.4rem 0 0">Bouton ci-dessous → flipcards (session de ce navigateur).</p>
     </div>
-    <div class="warn">
-      <p style="margin:0;color:var(--ink);font-family:system-ui,sans-serif;font-size:.92rem">
-        <strong>Pas d’e-mail automatique de mot de passe</strong> pour l’instant (hébergement GitHub Pages).
-        Les identifiants sont créés manuellement après paiement, puis communiqués hors site.
-        Le reçu / facture Stripe, lui, part depuis le Dashboard Stripe (réglage « Customer emails ») — indépendant de cette page.
-      </p>
+    <div class="callout">
+      <p style="margin:0;color:var(--ink)"><strong>2. Accès durable (autres appareils)</strong></p>
+      <p style="margin:.4rem 0 0">Espace abonné = e-mail Stripe + mot de passe d’accès (activé après paiement, communiqué hors site — pas d’e-mail auto pour l’instant).</p>
     </div>
-    <ol>
-      <li>Attends la confirmation de ton mot de passe (ou utilise celui déjà reçu).</li>
-      <li>Ouvre l’espace abonné → e-mail Stripe + mot de passe.</li>
-      <li>Tu arrives sur les flipcards.</li>
-    </ol>
     <p>
-      <a class="btn" href="../membre/">Se connecter</a>
-      <a class="btn secondary" href="../">Accueil</a>
+      <a class="btn" id="open" href="../gada/app.html">Ouvrir les flipcards</a>
+      <a class="btn secondary" href="../membre/">Espace abonné</a>
+    </p>
+    <p class="note">
+      Reçu / facture Stripe : réglage Dashboard « Customer emails » (indépendant de cette page).
+      <a href="../">Accueil</a>
     </p>
   </main>
 <script>
 sessionStorage.setItem("flipcards_paid", "1");
+sessionStorage.setItem("flipcards_ok", "1");
 </script>
 </body>
 </html>
