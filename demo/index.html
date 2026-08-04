@@ -380,119 +380,113 @@ body { padding: 1.5rem 1rem 3.5rem; background: #ffffff; }
   position: relative;
   overflow: visible;
 }
+/* Bulle de B.D. — ballon + queue vers la carte */
 .fiche-hover {
+  --bd-ink: #111111;
+  --bd-paper: #fffdf7;
   position: absolute;
-  left: calc(100% + .85rem);
+  left: calc(100% + .2rem);
   top: 50%;
-  transform: translateY(-50%) translateX(.4rem);
+  transform: translateY(-50%) translateX(.55rem) rotate(-1.4deg);
   z-index: 8;
-  width: min(22rem, 42vw);
-  max-height: min(24rem, 70vh);
+  width: min(23rem, 44vw);
+  max-height: min(26rem, 72vh);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  display: flex;
-  flex-direction: column;
-  gap: .55rem;
-  padding: .9rem 1.05rem;
-  overflow: auto;
-  overscroll-behavior: contain;
-  background: #fffef9;
-  border: 2px solid #1c1917;
-  border-radius: 1.15rem 1.15rem 1.15rem .35rem;
-  box-shadow: 4px 5px 0 rgba(28, 25, 23, .12);
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
   box-sizing: border-box;
-  text-align: left;
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
   cursor: default;
-  transition: opacity .15s ease, visibility .15s ease, transform .15s ease;
+  transition: opacity .18s ease, visibility .18s ease, transform .18s ease;
 }
-/* Pointe BD vers la carte */
-.fiche-hover::before {
-  content: "";
+.fiche-bd-svg {
   position: absolute;
-  right: 100%;
-  top: 1.35rem;
-  width: 0;
-  height: 0;
-  border: 11px solid transparent;
-  border-right-color: #1c1917;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
 }
-.fiche-hover::after {
-  content: "";
-  position: absolute;
-  right: 100%;
-  top: 1.5rem;
-  width: 0;
-  height: 0;
-  border: 8px solid transparent;
-  border-right-color: #fffef9;
-  margin-right: -2px;
+.fiche-bd-svg path {
+  fill: var(--bd-paper);
+  stroke: var(--bd-ink);
+  stroke-width: 3.4;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.fiche-bd-svg-side { display: block; }
+.fiche-bd-svg-up { display: none; }
+.fiche-bd-body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: .48rem;
+  max-height: inherit;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 1.2rem 1.2rem 1.2rem 2.05rem;
+  text-align: left;
 }
 .stage.is-fiche-peek .fiche-hover.has-content {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transform: translateY(-50%) translateX(0);
+  transform: translateY(-50%) translateX(0) rotate(-1.4deg);
 }
 .fiche-hover h4 {
-  margin: 0 0 .15rem;
+  margin: 0 0 .08rem;
   font-family: var(--font-display);
-  font-size: .68rem;
-  font-weight: 700;
-  letter-spacing: .06em;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .03em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--bd-ink);
 }
 .fiche-hover p {
   margin: 0;
   font-family: var(--font-ui);
-  font-size: .8rem;
-  font-weight: 500;
-  line-height: 1.42;
-  color: #1f2937;
+  font-size: .78rem;
+  font-weight: 600;
+  line-height: 1.36;
+  color: #151515;
   -webkit-user-select: none;
   user-select: none;
 }
-.fiche-hover p.is-empty { color: var(--muted); font-style: italic; }
+.fiche-hover p.is-empty { color: #9ca3af; font-style: italic; font-weight: 500; }
+.fiche-bd-block + .fiche-bd-block {
+  padding-top: .42rem;
+  border-top: 1.5px solid rgba(17, 17, 17, .16);
+}
 .flip-scene.is-flipped { cursor: help; }
 .stage.is-fiche-peek { cursor: default; }
 @media (max-width: 920px) {
   .fiche-hover {
     left: 50%;
     top: auto;
-    bottom: calc(100% + .75rem);
+    bottom: calc(100% + .15rem);
     width: min(94%, 22rem);
-    max-height: min(40vh, 16rem);
-    transform: translateX(-50%) translateY(.35rem);
-    border-radius: 1.15rem 1.15rem .35rem 1.15rem;
+    max-height: min(42vh, 17rem);
+    transform: translateX(-50%) translateY(.4rem) rotate(-.7deg);
   }
   .stage.is-fiche-peek .fiche-hover.has-content {
-    transform: translateX(-50%) translateY(0);
+    transform: translateX(-50%) translateY(0) rotate(-.7deg);
   }
-  .fiche-hover::before {
-    right: auto;
-    left: 1.5rem;
-    top: 100%;
-    border: 11px solid transparent;
-    border-top-color: #1c1917;
-  }
-  .fiche-hover::after {
-    right: auto;
-    left: 1.7rem;
-    top: 100%;
-    border: 8px solid transparent;
-    border-top-color: #fffef9;
-    margin-right: 0;
-    margin-top: -2px;
+  .fiche-bd-svg-side { display: none; }
+  .fiche-bd-svg-up { display: block; }
+  .fiche-bd-body {
+    padding: 1.05rem 1.1rem 1.7rem;
   }
 }
 @media (max-width: 720px) {
-  .fiche-hover {
-    padding: .75rem .85rem;
-  }
+  .fiche-bd-body { padding: .9rem .95rem 1.55rem; }
 }
 .controls {
   width: 100%;
@@ -786,21 +780,51 @@ body { padding: 1.5rem 1rem 3.5rem; background: #ffffff; }
             </div>
           </button>
           <div class="fiche-hover" id="fiche-hover" aria-hidden="true">
-            <div>
-              <h4>Faits</h4>
-              <p id="fiche-faits"></p>
-            </div>
-            <div>
-              <h4>Enjeu</h4>
-              <p id="fiche-enjeu"></p>
-            </div>
-            <div>
-              <h4>Solution</h4>
-              <p id="fiche-solution"></p>
-            </div>
-            <div>
-              <h4>Perspectives</h4>
-              <p id="fiche-perspective"></p>
+            <svg class="fiche-bd-svg fiche-bd-svg-side" viewBox="0 0 280 220" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M 46 18
+                H 248
+                Q 268 18 268 40
+                V 178
+                Q 268 200 246 200
+                H 52
+                Q 32 200 32 178
+                V 118
+                L 4 128
+                L 32 98
+                V 40
+                Q 32 18 46 18 Z"/>
+            </svg>
+            <svg class="fiche-bd-svg fiche-bd-svg-up" viewBox="0 0 280 220" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M 32 16
+                H 248
+                Q 268 16 268 38
+                V 158
+                Q 268 180 246 180
+                H 108
+                L 96 208
+                L 86 180
+                H 32
+                Q 12 180 12 158
+                V 38
+                Q 12 16 32 16 Z"/>
+            </svg>
+            <div class="fiche-bd-body">
+              <div class="fiche-bd-block">
+                <h4>Faits</h4>
+                <p id="fiche-faits"></p>
+              </div>
+              <div class="fiche-bd-block">
+                <h4>Enjeu</h4>
+                <p id="fiche-enjeu"></p>
+              </div>
+              <div class="fiche-bd-block">
+                <h4>Solution</h4>
+                <p id="fiche-solution"></p>
+              </div>
+              <div class="fiche-bd-block">
+                <h4>Perspectives</h4>
+                <p id="fiche-perspective"></p>
+              </div>
             </div>
           </div>
         </div>
