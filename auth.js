@@ -1,6 +1,6 @@
 /* shared auth helpers — inject AUTH_API via https://flipcards-auth.cab-pechard.workers.dev */
 window.FLIPCARDS_AUTH = {
-  api: "https://flipcards-auth.cab-pechard.workers.dev",
+  baseUrl: "https://flipcards-auth.cab-pechard.workers.dev",
   tokenKey: "flipcards_token",
   getToken() {
     return sessionStorage.getItem(this.tokenKey) || localStorage.getItem(this.tokenKey) || "";
@@ -20,7 +20,8 @@ window.FLIPCARDS_AUTH = {
     const headers = Object.assign({ "Content-Type": "application/json" }, opts.headers || {});
     const token = this.getToken();
     if (token && !headers.Authorization) headers.Authorization = "Bearer " + token;
-    const res = await fetch(this.api.replace(/\/$/, "") + path, {
+    const base = String(this.baseUrl || "").replace(/\/$/, "");
+    const res = await fetch(base + path, {
       method: opts.method || "GET",
       headers,
       body: opts.body ? JSON.stringify(opts.body) : undefined,
