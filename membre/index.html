@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Espace membre — Flipcards</title>
+<title>Connexion — Flipcards</title>
 <style>
 :root { --ink:#1a1a1a; --muted:#6b7280; --accent:#0f766e; --bg:#f8faf9; --card:#fff; --border:#e5e7eb; }
 body { margin:0; min-height:100vh; display:grid; place-items:center; font-family:system-ui,sans-serif;
@@ -12,50 +12,54 @@ body { margin:0; min-height:100vh; display:grid; place-items:center; font-family
 .box { width:min(440px,100%); background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.5rem; }
 h1 { font-family: Georgia, serif; font-size:1.35rem; margin:0 0 .4rem; }
 p { color:var(--muted); line-height:1.45; }
-input { width:100%; padding:.7rem .8rem; border:1px solid var(--border); border-radius:8px; font-size:1rem; }
-button, .btn { margin-top:.8rem; display:inline-block; width:100%; text-align:center; border:0; border-radius:8px;
-  padding:.75rem 1rem; background:var(--accent); color:#fff; font-weight:600; text-decoration:none; cursor:pointer; }
-.err { color:#b91c1c; min-height:1.2em; font-size:.9rem; }
-.ok { display:none; }
-code { background:#f3f4f6; padding:.1rem .35rem; border-radius:4px; }
+label { display:block; margin:.75rem 0 .35rem; font-size:.9rem; color:var(--ink); }
+input { width:100%; padding:.7rem .8rem; border:1px solid var(--border); border-radius:8px; font-size:1rem; box-sizing:border-box; }
+button { margin-top:1rem; display:inline-block; width:100%; text-align:center; border:0; border-radius:8px;
+  padding:.75rem 1rem; background:var(--accent); color:#fff; font-weight:600; cursor:pointer; }
+.err { color:#b91c1c; min-height:1.2em; font-size:.9rem; margin-top:.5rem; }
 </style>
 </head>
 <body>
   <div class="box" id="login">
-    <h1>Espace membre</h1>
-    <p>Entre l’e-mail utilisé pour l’abonnement.</p>
-    <form id="f">
-      <input id="email" type="email" required placeholder="prenom@univ.fr" autocomplete="email">
-      <button type="submit">Accéder</button>
+    <h1>Connexion membre</h1>
+    <p>E-mail utilisé chez Stripe + mot de passe reçu après enregistrement.</p>
+    <form id="f" autocomplete="on">
+      <label for="email">E-mail</label>
+      <input id="email" type="email" required placeholder="prenom@univ.fr" autocomplete="username">
+      <label for="pw">Mot de passe</label>
+      <input id="pw" type="password" required autocomplete="current-password">
+      <button type="submit">Se connecter</button>
       <div class="err" id="err"></div>
     </form>
     <p style="font-size:.85rem;margin-top:1rem"><a href="../checkout/">Pas encore abonné ?</a></p>
   </div>
-  <div class="box ok" id="access">
-    <h1>Bienvenue</h1>
-    <p>Statut : <strong id="st"></strong> · Offre : <strong id="of"></strong></p>
-    <p>Mot de passe flipcards : <code id="pw"></code></p>
-    <a class="btn" id="open" href="../gada/">Ouvrir les flipcards</a>
-  </div>
 <script>
-const ALLOW = {"test-e2e@flipcards.local": {"statut": "essai", "offre": "mensuel"}};
-const PASSWORD = "nkncaJaAHlfP";
+const ALLOW = {"test-e2e@flipcards.local": {"statut": "essai", "offre": "mensuel", "hash": "a166050c60e56943a0eafbece453d30449aa76d669c3e38069ca93246e2c5986"}};
+async function sha256(text) {
+  const data = new TextEncoder().encode(text);
+  const buf = await crypto.subtle.digest("SHA-256", data);
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,"0")).join("");
+}
 const form = document.getElementById('f');
-form.addEventListener('submit', (e) => {
+form.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const email = document.getElementById('email').value.trim().toLowerCase();
-  const row = ALLOW[email];
   const err = document.getElementById('err');
-  if (!row || !['actif','essai'].includes(row.statut)) {
-    err.textContent = 'Aucun abonnement actif pour cet e-mail.';
+  err.textContent = '';
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const pw = document.getElementById('pw').value;
+  const row = ALLOW[email];
+  if (!row || !['actif','essai'].includes(row.statut) || !row.hash) {
+    err.textContent = 'Identifiants incorrects ou abonnement inactif.';
     return;
   }
-  document.getElementById('login').style.display = 'none';
-  document.getElementById('access').style.display = 'block';
-  document.getElementById('st').textContent = row.statut;
-  document.getElementById('of').textContent = row.offre || '—';
-  document.getElementById('pw').textContent = PASSWORD;
+  const h = await sha256(pw);
+  if (h !== row.hash) {
+    err.textContent = 'Identifiants incorrects ou abonnement inactif.';
+    return;
+  }
   sessionStorage.setItem('flipcards_member', email);
+  sessionStorage.setItem('flipcards_ok', '1');
+  location.replace('../gada/app.html');
 });
 </script>
 </body>
