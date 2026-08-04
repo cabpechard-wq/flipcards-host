@@ -1051,7 +1051,7 @@ function matchesFilters(card) {
   return matchesFiltersExcept(card, null);
 }
 
-/** Lot courant : thème ∩ (notions en OU) ∩ (★ en OU). exceptGroup = pair multi-select. */
+/** Lot cartes : thème ∩ (notions en OU) ∩ (★ en OU). */
 function matchesFiltersExcept(card, exceptGroup) {
   const themes = selectedList("theme");
   const notions = selectedList("notion");
@@ -1079,7 +1079,6 @@ function selectionHint() {
 }
 
 function updateHomeCount() {
-  // Disponibilité d'abord (peut élaguer une sélection devenue hors lot)
   updateChipAvailability();
   const n = filteredIndexes().length;
   homeCount.textContent = String(n);
@@ -1102,21 +1101,36 @@ function tagsPresentInData() {
 }
 
 /**
- * Cascade fermée :
- * 1) Thème (1 choix) borne l'univers.
- * 2) Notions ↔ Importance se refiltrent mutuellement sur le lot
- *    (on ignore uniquement le groupe de la capsule pour permettre le multi).
+ * Cascade unidirectionnelle 1→2→3 (capsules) :
+ * 1 Thème borne notions + ★
+ * 2 Notions refiltrent ★ uniquement (jamais l'inverse)
+ * 3 Importance ne touche que le lot cartes, pas les capsules Notions
  */
-function tagsInLotExcept(exceptGroup) {
+function cardMatchesUpstream(card, opts) {
+  const themes = selectedList("theme");
+  const notions = selectedList("notion");
+  const levels = selectedList("importance").map(Number);
+  const applyTheme = !opts || opts.applyTheme !== false;
+  const applyNotion = !!(opts && opts.applyNotion);
+  const applyImportance = !!(opts && opts.applyImportance);
+  if (applyTheme && themes.length && !(card.themes || []).some(t => themes.includes(t))) return false;
+  if (applyNotion && notions.length && !(card.notions || []).some(n => notions.includes(n))) return false;
+  if (applyImportance && levels.length && !levels.includes(Number(card.importance_level) || 0)) return false;
+  return true;
+}
+
+function collectTags(pred) {
+  const themes = new Set();
   const notions = new Set();
   const importance = new Set();
   for (const card of DATA) {
-    if (!matchesFiltersExcept(card, exceptGroup)) continue;
+    if (!pred(card)) continue;
+    (card.themes || []).forEach(t => themes.add(t));
     (card.notions || []).forEach(n => notions.add(n));
     const lvl = Number(card.importance_level) || 0;
     if (lvl) importance.add(String(lvl));
   }
-  return { notions, importance };
+  return { themes, notions, importance };
 }
 
 function setChipState(btn, ok, exclusiveDim) {
@@ -1129,25 +1143,44 @@ function setChipState(btn, ok, exclusiveDim) {
 function updateChipAvailability() {
   const present = tagsPresentInData();
   const themeExclusive = selected.theme.size > 0;
+  const hasLower = selected.notion.size > 0 || selected.importance.size > 0;
 
-  let notionLot = tagsInLotExcept("notion");
-  let starLot = tagsInLotExcept("importance");
+  // 2- Notions : uniquement le thème (Importance n'intervient jamais)
+  let notionScope = collectTags(card =>
+    cardMatchesUpstream(card, { applyTheme: true, applyNotion: false, applyImportance: false })
+  );
+  // 3- ★ : thème + notions (pairs ★ cumulables)
+  let starScope = collectTags(card =>
+    cardMatchesUpstream(card, { applyTheme: true, applyNotion: true, applyImportance: false })
+  );
+  // 1- Thèmes : catalogue, ou thèmes du lot Notion/★ si on a commencé par le bas
+  let themeScope = hasLower
+    ? collectTags(card =>
+        cardMatchesUpstream(card, { applyTheme: false, applyNotion: true, applyImportance: true })
+      )
+    : present;
 
   document.querySelectorAll('.chip[data-group="notion"]').forEach(btn => {
-    if (selected.notion.has(btn.dataset.value) && !notionLot.notions.has(btn.dataset.value)) {
+    if (selected.notion.has(btn.dataset.value) && !notionScope.notions.has(btn.dataset.value)) {
       selected.notion.delete(btn.dataset.value);
       btn.setAttribute("aria-pressed", "false");
     }
   });
+  // Recalcul ★ après éventuel prune notions (changement de thème)
+  starScope = collectTags(card =>
+    cardMatchesUpstream(card, { applyTheme: true, applyNotion: true, applyImportance: false })
+  );
   document.querySelectorAll('.chip[data-group="importance"]').forEach(btn => {
-    if (selected.importance.has(btn.dataset.value) && !starLot.importance.has(btn.dataset.value)) {
+    if (selected.importance.has(btn.dataset.value) && !starScope.importance.has(btn.dataset.value)) {
       selected.importance.delete(btn.dataset.value);
       btn.setAttribute("aria-pressed", "false");
     }
   });
-
-  notionLot = tagsInLotExcept("notion");
-  starLot = tagsInLotExcept("importance");
+  if (hasLower) {
+    themeScope = collectTags(card =>
+      cardMatchesUpstream(card, { applyTheme: false, applyNotion: true, applyImportance: true })
+    );
+  }
 
   document.querySelectorAll(".chip").forEach(btn => {
     const group = btn.dataset.group;
@@ -1157,12 +1190,12 @@ function updateChipAvailability() {
     let exclusiveDim = false;
 
     if (group === "theme") {
-      ok = present.themes.has(value);
+      ok = themeScope.themes.has(value);
       exclusiveDim = themeExclusive && !isSelected && ok;
     } else if (group === "notion") {
-      ok = notionLot.notions.has(value);
+      ok = notionScope.notions.has(value);
     } else if (group === "importance") {
-      ok = starLot.importance.has(value);
+      ok = starScope.importance.has(value);
     }
 
     setChipState(btn, ok, exclusiveDim);
