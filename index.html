@@ -1,10 +1,51 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">
-<meta name="robots" content="noindex"><title>Flipcards</title></head>
-<body style="font-family:system-ui;padding:2rem">
-<h1>Flipcards — grands arrêts du droit public et administratif</h1>
-<p><a href="/demo/">Démo publique</a> ·
-<a href="/checkout/">S’abonner</a> ·
-<a href="/merci/">Après paiement</a> ·
-<a href="/membre/">Espace membre</a> ·
-<a href="/gada/">Accès flipcards</a></p>
-</body></html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flipcards — Grands arrêts du droit public et administratif</title>
+<style>
+:root { --ink:#1a1a1a; --muted:#6b7280; --accent:#0f766e; --bg:#f8faf9; --card:#fff; --border:#e5e7eb; }
+* { box-sizing:border-box }
+body { margin:0; min-height:100vh; font-family: Georgia, "Times New Roman", serif; color:var(--ink);
+  background:
+    radial-gradient(1100px 560px at 8% -10%, #d1fae5, transparent 55%),
+    radial-gradient(900px 480px at 100% 100%, #ecfdf5, transparent 50%),
+    var(--bg);
+  padding:2rem 1rem;
+  display:grid; place-items:center;
+}
+main { width:min(720px,100%); }
+.brand { font-size: clamp(1.85rem, 4vw, 2.6rem); margin:0 0 .35rem; line-height:1.15; letter-spacing:-0.02em; }
+.lead { font-family:system-ui,sans-serif; color:var(--muted); line-height:1.55; margin:0 0 1.75rem; max-width:38rem; }
+.grid { display:grid; gap:1rem; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); }
+.card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.35rem 1.4rem; }
+.card h2 { margin:0 0 .4rem; font-size:1.2rem; }
+.card p { font-family:system-ui,sans-serif; color:var(--muted); font-size:.95rem; line-height:1.45; margin:0 0 1rem; }
+a.btn { display:inline-block; background:var(--accent); color:#fff; text-decoration:none;
+  font-family:system-ui,sans-serif; font-weight:600; padding:.75rem 1.1rem; border-radius:8px; }
+a.btn.secondary { background:#fff; color:var(--accent); border:1px solid var(--accent); }
+.foot { margin-top:1.5rem; font-family:system-ui,sans-serif; font-size:.9rem; color:var(--muted); }
+.foot a { color:var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1 class="brand">Flipcards</h1>
+  <p class="lead">Grands arrêts du droit public et administratif — fiches recto/verso pour réviser efficacement.</p>
+  <div class="grid">
+    <div class="card">
+      <h2>Espace abonné</h2>
+      <p>Déjà abonné ? Connecte-toi avec l’e-mail Stripe et ton mot de passe.</p>
+      <a class="btn" href="./membre/">Accéder à l’espace abonné</a>
+    </div>
+    <div class="card">
+      <h2>Abonnements</h2>
+      <p>Découvre les formules mensuelle, annuelle et test, puis paie via Stripe.</p>
+      <a class="btn secondary" href="./checkout/">Voir les abonnements</a>
+    </div>
+  </div>
+  <p class="foot"><a href="./demo/">Essayer la démo gratuite</a> (8 cartes)</p>
+</main>
+</body>
+</html>
