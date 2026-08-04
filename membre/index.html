@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>Connexion — Flipcards</title>
 <style>
 :root { --ink:#1a1a1a; --muted:#6b7280; --accent:#0f766e; --bg:#f8faf9; --card:#fff; --border:#e5e7eb; }
@@ -42,36 +42,75 @@ button { margin-top:1rem; width:100%; border:0; border-radius:8px; padding:.75re
       <a href="../checkout/">Pas encore abonné ?</a>
     </div>
   </div>
-<script src="../auth.js?v=2"></script>
 <script>
-(async function () {
-  const q = new URLSearchParams(location.search);
-  if (q.get("email")) document.getElementById("email").value = q.get("email");
-
-  const me = await FLIPCARDS_AUTH.requireSession();
-  if (me) {
-    location.replace("../gada/app.html");
-    return;
+(function () {
+  var BASE = "https://flipcards-auth.cab-pechard.workers.dev";
+  var TOKEN_KEY = "flipcards_token";
+  function getToken() {
+    return sessionStorage.getItem(TOKEN_KEY) || localStorage.getItem(TOKEN_KEY) || "";
   }
-
-  document.getElementById("f").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const err = document.getElementById("err");
-    err.textContent = "";
-    try {
-      const data = await FLIPCARDS_AUTH.api("/api/login", {
-        method: "POST",
-        body: {
-          email: document.getElementById("email").value.trim(),
-          password: document.getElementById("pw").value,
-        },
-      });
-      FLIPCARDS_AUTH.setToken(data.token, document.getElementById("remember").checked);
-      location.replace("../gada/app.html");
-    } catch (ex) {
-      err.textContent = ex.message || "Erreur";
+  function setToken(token, remember) {
+    sessionStorage.setItem(TOKEN_KEY, token);
+    sessionStorage.setItem("flipcards_ok", "1");
+    if (remember) localStorage.setItem(TOKEN_KEY, token);
+    else localStorage.removeItem(TOKEN_KEY);
+  }
+  function clearToken() {
+    sessionStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem("flipcards_ok");
+    localStorage.removeItem(TOKEN_KEY);
+  }
+  async function api(path, opts) {
+    opts = opts || {};
+    var headers = Object.assign({ "Content-Type": "application/json" }, opts.headers || {});
+    var token = getToken();
+    if (token && !headers.Authorization) headers.Authorization = "Bearer " + token;
+    var res = await fetch(String(BASE).replace(/\/$/, "") + path, {
+      method: opts.method || "GET",
+      headers: headers,
+      body: opts.body ? JSON.stringify(opts.body) : undefined,
+    });
+    var data = {};
+    try { data = await res.json(); } catch (_) {}
+    if (!res.ok) {
+      var err = new Error(data.error || ("Erreur " + res.status));
+      err.status = res.status;
+      throw err;
     }
-  });
+    return data;
+  }
+  window.FLIPCARDS_AUTH = { api: api, setToken: setToken, clearToken: clearToken, getToken: getToken };
+
+  (async function () {
+    var q = new URLSearchParams(location.search);
+    if (q.get("email")) document.getElementById("email").value = q.get("email");
+    try {
+      if (getToken()) {
+        await api("/api/me");
+        location.replace("../gada/app.html");
+        return;
+      }
+    } catch (_) { clearToken(); }
+
+    document.getElementById("f").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      var errEl = document.getElementById("err");
+      errEl.textContent = "";
+      try {
+        var data = await api("/api/login", {
+          method: "POST",
+          body: {
+            email: document.getElementById("email").value.trim(),
+            password: document.getElementById("pw").value,
+          },
+        });
+        setToken(data.token, document.getElementById("remember").checked);
+        location.replace("../gada/app.html");
+      } catch (ex) {
+        errEl.textContent = ex.message || "Erreur";
+      }
+    });
+  })();
 })();
 </script>
 </body>
