@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Accès membres — Flipcards</title>
+<title>Accès abonnés — Flipcards</title>
 <style>
   :root { --ink:#1a1a1a; --muted:#6b7280; --accent:#0f766e; --bg:#f8faf9; --card:#fff; --border:#e5e7eb; }
   * { box-sizing: border-box; }
@@ -21,16 +21,24 @@
     font-family:system-ui,sans-serif; font-weight:600; cursor:pointer; }
   button:hover { filter:brightness(1.05); }
   .err { color:#b91c1c; font-family:system-ui,sans-serif; font-size:.85rem; min-height:1.2em; margin-top:.5rem; }
+  .links { margin-top:1.1rem; font-family:system-ui,sans-serif; font-size:.9rem; line-height:1.6; }
+  .links a { color:var(--accent); }
 </style>
 </head>
 <body>
   <form class="box" id="gate" autocomplete="off">
-    <h1>Espace membres</h1>
-    <p>Flipcards — grands arrêts du droit public et administratif. Accès réservé aux abonnés étudiants.</p>
+    <h1>Accès abonnés</h1>
+    <p>Flipcards complètes — réservées aux abonnés. Mot de passe reçu après paiement (ou via l’espace membre).</p>
     <label for="pw">Mot de passe</label>
     <input id="pw" name="pw" type="password" required autofocus>
     <button type="submit">Ouvrir les flipcards</button>
     <div class="err" id="err"></div>
+    <div class="links">
+      Pas encore abonné ?<br>
+      <a href="../demo/">Essayer la démo (gratuit)</a><br>
+      <a href="../checkout/">S’abonner</a><br>
+      <a href="../membre/">J’ai déjà un abonnement (e-mail)</a>
+    </div>
   </form>
 <script>
 const HASH = "655158b84f111b61d21fde029a5402c0f3d07391008582e08fc92bc129d86f4c";
