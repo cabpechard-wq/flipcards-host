@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<meta http-equiv="Cache-Control" content="no-cache"><title>Connexion — Flipcards</title>
+<title>Connexion — Flipcards</title>
 <style>
 :root { --ink:#1a1a1a; --muted:#6b7280; --accent:#0f766e; --bg:#f8faf9; --card:#fff; --border:#e5e7eb; }
 body { margin:0; min-height:100vh; display:grid; place-items:center; font-family:system-ui,sans-serif;
@@ -34,7 +34,7 @@ button { margin-top:1rem; display:inline-block; width:100%; text-align:center; b
     <p style="font-size:.85rem;margin-top:1rem"><a href="../checkout/">Pas encore abonné ?</a></p>
   </div>
 <script>
-const ALLOW = {"antonin.pechard@gmail.com": {"statut": "actif", "offre": "test", "hash": "2e0749caeda254dc4599ea85ff4669f9024d48464230612daf5f806c4ddd8270"}, "test-e2e@flipcards.local": {"statut": "essai", "offre": "mensuel", "hash": "a166050c60e56943a0eafbece453d30449aa76d669c3e38069ca93246e2c5986"}};
+const ALLOW = {"antonin.pechard@gmail.com": {"statut": "actif", "offre": "test", "hash": "937e8d5fbb48bd4949536cd65b8d35c426b80d2f830c5c308e2cdec422ae2244"}, "test-e2e@flipcards.local": {"statut": "essai", "offre": "mensuel", "hash": "a166050c60e56943a0eafbece453d30449aa76d669c3e38069ca93246e2c5986"}};
 async function sha256(text) {
   const data = new TextEncoder().encode(text);
   const buf = await crypto.subtle.digest("SHA-256", data);
@@ -46,15 +46,21 @@ form.addEventListener('submit', async (e) => {
   const err = document.getElementById('err');
   err.textContent = '';
   const email = document.getElementById('email').value.trim().toLowerCase();
-  const pw = document.getElementById('pw').value;
+  const pw = document.getElementById('pw').value.trim();
   const row = ALLOW[email];
   if (!row || !['actif','essai'].includes(row.statut) || !row.hash) {
-    err.textContent = 'Identifiants incorrects ou abonnement inactif.';
+    err.textContent = 'Aucun compte actif pour cet e-mail.';
     return;
   }
-  const h = await sha256(pw);
+  let h;
+  try {
+    h = await sha256(pw);
+  } catch (ex) {
+    err.textContent = 'Navigateur incompatible (ouvre la page en HTTPS, hors iframe).';
+    return;
+  }
   if (h !== row.hash) {
-    err.textContent = 'Identifiants incorrects ou abonnement inactif.';
+    err.textContent = 'Mot de passe incorrect.';
     return;
   }
   sessionStorage.setItem('flipcards_member', email);
