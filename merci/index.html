@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Paiement reçu — Flipcards</title>
+<style>
+:root { --ink:#1a1a1a; --muted:#6b7280; --accent:#0f766e; --bg:#f8faf9; --card:#fff; --border:#e5e7eb; }
+* { box-sizing:border-box }
+body { margin:0; min-height:100vh; display:grid; place-items:center; font-family:Georgia,"Times New Roman",serif;
+  background: radial-gradient(1000px 500px at 10% 0%, #d1fae5, var(--bg)); color:var(--ink); padding:1.5rem; }
+.box { width:min(520px,100%); background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.75rem; }
+h1 { font-size:1.45rem; margin:0 0 .5rem; }
+p, li { font-family:system-ui,sans-serif; color:var(--muted); line-height:1.5; }
+ol { padding-left:1.2rem; }
+code { background:#f3f4f6; padding:.15rem .4rem; border-radius:4px; color:var(--ink); font-size:1rem; }
+a.btn { display:inline-block; margin:.4rem .4rem .4rem 0; background:var(--accent); color:#fff; text-decoration:none;
+  font-family:system-ui,sans-serif; font-weight:600; padding:.7rem 1rem; border-radius:8px; }
+a.btn.secondary { background:#fff; color:var(--accent); border:1px solid var(--accent); }
+.callout { background:#ecfdf5; border:1px solid #a7f3d0; border-radius:8px; padding:.9rem 1rem; margin:1rem 0; }
+</style>
+</head>
+<body>
+  <main class="box">
+    <h1>Paiement reçu</h1>
+    <p>Merci — ton abonnement Flipcards (grands arrêts du droit public et administratif) est actif.</p>
+    <div class="callout">
+      <p style="margin:0 0 .5rem;color:var(--ink)"><strong>Mot de passe d’accès</strong></p>
+      <p style="margin:0"><code id="pw">nkncaJaAHlfP</code></p>
+    </div>
+    <ol>
+      <li>Ouvre les flipcards avec le mot de passe ci-dessus.</li>
+      <li>(Optionnel) Enregistre-toi aussi sur l’espace membre avec l’e-mail utilisé chez Stripe.</li>
+    </ol>
+    <p>
+      <a class="btn" href="../gada/">Ouvrir les flipcards</a>
+      <a class="btn secondary" href="../membre/">Espace membre</a>
+    </p>
+    <p style="font-size:.85rem;margin-top:1.2rem">
+      Conserve cet e-mail Stripe / cette page. En cas de souci : reviens sur
+      <a href="../checkout/">la page d’abonnement</a>.
+    </p>
+  </main>
+<script>
+// Prefill password field on /gada/ if same browser session
+sessionStorage.setItem("flipcards_paid", "1");
+</script>
+</body>
+</html>
