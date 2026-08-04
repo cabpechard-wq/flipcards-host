@@ -4,34 +4,34 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Nouveau mot de passe — Flipcards</title>
-<style>
-:root { --ink:#1a1a1a; --muted:#6b7280; --accent:#0f766e; --bg:#f8faf9; --card:#fff; --border:#e5e7eb; }
-body { margin:0; min-height:100vh; display:grid; place-items:center; font-family:system-ui,sans-serif;
-  background: radial-gradient(900px 500px at 10% 0%, #d1fae5, var(--bg)); color:var(--ink); padding:1.5rem; }
-.box { width:min(440px,100%); background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.5rem; }
-h1 { font-family: Georgia, serif; font-size:1.3rem; }
-p { color:var(--muted); }
-label { display:block; margin:.75rem 0 .35rem; }
-input { width:100%; padding:.7rem .8rem; border:1px solid var(--border); border-radius:8px; box-sizing:border-box; }
-button { margin-top:1rem; width:100%; border:0; border-radius:8px; padding:.75rem 1rem; background:var(--accent); color:#fff; font-weight:600; cursor:pointer; }
-.err { color:#b91c1c; min-height:1.2em; margin-top:.5rem; }
-</style>
+<title>Nouveau mot de passe — Grands arrêts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
 </head>
 <body>
-<div class="box">
-  <h1>Nouveau mot de passe</h1>
-  <p>4 caractères minimum.</p>
-  <form id="f">
-    <label for="pw">Mot de passe</label>
-    <input id="pw" type="password" minlength="4" required autocomplete="new-password">
-    <label for="pw2">Confirmer</label>
-    <input id="pw2" type="password" minlength="4" required autocomplete="new-password">
-    <button type="submit">Enregistrer</button>
-    <div class="err" id="err"></div>
-  </form>
-</div>
-<script src="../../auth.js?v=2"></script>
+<main class="site-main narrow">
+  <p class="site-crumb">
+    <a href="../../">Grands arrêts</a>
+    <span class="sep">›</span>
+    <strong>Nouveau mot de passe</strong>
+  </p>
+  <h1 class="site-title">Nouveau mot de passe</h1>
+  <p class="site-lead">4 caractères minimum.</p>
+  <div class="site-panel">
+    <form id="f">
+      <label class="field" for="pw">Mot de passe</label>
+      <input id="pw" type="password" minlength="4" required autocomplete="new-password">
+      <label class="field" for="pw2">Confirmer</label>
+      <input id="pw2" type="password" minlength="4" required autocomplete="new-password">
+      <button class="btn block" type="submit" style="margin-top:1rem">Enregistrer</button>
+      <div class="err" id="err"></div>
+    </form>
+  </div>
+</main>
+<script src="../../auth.js?v=4"></script>
+<script src="../../site-nav.js?v=1"></script>
 <script>
 const token = new URLSearchParams(location.search).get("token") || "";
 if (!token) {

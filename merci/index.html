@@ -5,57 +5,51 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <meta http-equiv="Cache-Control" content="no-cache">
-<title>Paiement reçu — Flipcards</title>
-<style>
-:root { --ink:#1a1a1a; --muted:#6b7280; --accent:#0f766e; --bg:#f8faf9; --card:#fff; --border:#e5e7eb; }
-* { box-sizing:border-box }
-body { margin:0; min-height:100vh; display:grid; place-items:center; font-family:Georgia,"Times New Roman",serif;
-  background: radial-gradient(1000px 500px at 10% 0%, #d1fae5, var(--bg)); color:var(--ink); padding:1.5rem; }
-.box { width:min(480px,100%); background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.75rem; }
-h1 { font-size:1.4rem; margin:0 0 .5rem; }
-p, label { font-family:system-ui,sans-serif; color:var(--muted); line-height:1.45; }
-label { display:block; margin:.7rem 0 .3rem; color:var(--ink); font-size:.9rem; }
-input { width:100%; padding:.7rem .8rem; border:1px solid var(--border); border-radius:8px; font-size:1rem; }
-button, a.btn { display:inline-block; margin-top:.9rem; background:var(--accent); color:#fff; border:0; border-radius:8px;
-  padding:.75rem 1rem; font-family:system-ui,sans-serif; font-weight:600; cursor:pointer; text-decoration:none; width:100%; text-align:center; }
-a.btn.secondary { background:#fff; color:var(--accent); border:1px solid var(--accent); width:auto; margin-right:.4rem; }
-.err { color:#b91c1c; font-family:system-ui,sans-serif; font-size:.9rem; min-height:1.2em; margin-top:.5rem; }
-.ok { color:#047857; font-family:system-ui,sans-serif; font-size:.9rem; }
-.hidden { display:none !important; }
-.note { font-size:.85rem; margin-top:1rem; }
-</style>
+<title>Paiement reçu — Grands arrêts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../site.css">
 </head>
 <body>
-<main class="box">
-  <h1>Paiement reçu</h1>
-  <p id="lead">Vérification du paiement Stripe…</p>
-  <div id="err" class="err"></div>
+<main class="site-main narrow">
+  <p class="site-crumb">
+    <a href="../">Grands arrêts</a>
+    <span class="sep">›</span>
+    <strong>Paiement</strong>
+  </p>
+  <h1 class="site-title">Paiement reçu</h1>
+  <p class="site-lead" id="lead">Vérification du paiement Stripe…</p>
+  <div class="err" id="err"></div>
 
-  <div id="need-session" class="hidden">
-    <p>Cette page ne débloque l’accès <strong>que</strong> après un vrai paiement Stripe (lien avec <code>session_id</code>).</p>
-    <p>Si tu viens de payer, le Payment Link doit rediriger vers<br>
+  <div id="need-session" class="site-panel hidden">
+    <p class="site-lead" style="margin:0 0 1rem">Cette page ne débloque l’accès <strong>que</strong> après un vrai paiement Stripe (lien avec <code>session_id</code>).</p>
+    <p class="site-note">Si tu viens de payer, le Payment Link doit rediriger vers<br>
       <code>…/merci/?session_id={CHECKOUT_SESSION_ID}</code></p>
-    <a class="btn secondary" href="../checkout/">Retour aux abonnements</a>
-    <a class="btn secondary" href="../membre/">Déjà un compte ? Connexion</a>
+    <p style="margin-top:1rem">
+      <a class="btn secondary" href="../checkout/">Retour aux abonnements</a>
+      <a class="btn secondary" href="../membre/" style="margin-left:.35rem">Connexion</a>
+    </p>
   </div>
 
-  <form id="setpw" class="hidden">
+  <form id="setpw" class="site-panel hidden">
     <p class="ok">Paiement confirmé pour <strong id="email"></strong>.</p>
-    <p>Choisis ton mot de passe (4 caractères minimum) pour te reconnecter plus tard.</p>
-    <label for="pw">Mot de passe</label>
+    <p class="site-lead" style="margin:.75rem 0 0">Choisis ton mot de passe (4 caractères minimum) pour te reconnecter plus tard.</p>
+    <label class="field" for="pw">Mot de passe</label>
     <input id="pw" type="password" minlength="4" required autocomplete="new-password">
-    <label for="pw2">Confirmer</label>
+    <label class="field" for="pw2">Confirmer</label>
     <input id="pw2" type="password" minlength="4" required autocomplete="new-password">
-    <button type="submit">Enregistrer et ouvrir les flipcards</button>
+    <button class="btn block" type="submit" style="margin-top:1rem">Enregistrer et ouvrir les flipcards</button>
   </form>
 
-  <div id="ready" class="hidden">
+  <div id="ready" class="site-panel hidden">
     <p class="ok">Compte déjà prêt pour <strong id="email2"></strong>.</p>
-    <button type="button" id="open">Ouvrir les flipcards</button>
-    <p class="note"><a href="../membre/">Ou se connecter</a></p>
+    <button type="button" class="btn block" id="open" style="margin-top:1rem">Ouvrir les flipcards</button>
+    <p class="site-note"><a href="../membre/">Ou se connecter</a></p>
   </div>
 </main>
-<script src="../auth.js?v=2"></script>
+<script src="../auth.js?v=4"></script>
+<script src="../site-nav.js?v=1"></script>
 <script>
 (async function () {
   const params = new URLSearchParams(location.search);
@@ -91,8 +85,6 @@ a.btn.secondary { background:#fff; color:var(--accent); border:1px solid var(--a
   } else {
     document.getElementById("email2").textContent = claim.email;
     document.getElementById("ready").classList.remove("hidden");
-    // still need login or set-password with claim to mint session if they have pw —
-    // offer login redirect
   }
 
   document.getElementById("setpw").addEventListener("submit", async (e) => {

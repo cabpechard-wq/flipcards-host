@@ -3,53 +3,47 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>S’abonner — Flipcards</title>
-<style>
-:root { --ink:#1a1a1a; --muted:#6b7280; --accent:#0f766e; --bg:#f8faf9; --card:#fff; --border:#e5e7eb; }
-* { box-sizing:border-box }
-body { margin:0; font-family: Georgia, "Times New Roman", serif; color:var(--ink);
-  background: radial-gradient(1000px 500px at 0% 0%, #d1fae5, transparent 50%), var(--bg); padding:2rem 1rem; }
-main { max-width:720px; margin:0 auto; }
-h1 { font-size: clamp(1.6rem, 3vw, 2.2rem); margin:0 0 .5rem; }
-.lead { font-family:system-ui,sans-serif; color:var(--muted); line-height:1.5; }
-.grid { display:grid; gap:1rem; margin:1.5rem 0; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); }
-.card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.25rem; }
-.card.test { border-style:dashed; }
-.card h2 { margin:0 0 .35rem; font-size:1.2rem; }
-.price { font-family:system-ui,sans-serif; font-size:1.6rem; font-weight:700; color:var(--accent); }
-.card p { font-family:system-ui,sans-serif; color:var(--muted); font-size:.92rem; }
-a.btn { display:inline-block; margin-top:.8rem; background:var(--accent); color:#fff; text-decoration:none;
-  font-family:system-ui,sans-serif; font-weight:600; padding:.7rem 1rem; border-radius:8px; }
-a.btn.secondary { background:#fff; color:var(--accent); border:1px solid var(--accent); }
-.note { font-family:system-ui,sans-serif; font-size:.85rem; color:var(--muted); }
-</style>
+<title>Abonnements — Grands arrêts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../site.css">
 </head>
 <body>
-<main>
-  <h1>Flipcards — grands arrêts du droit public et administratif</h1>
-  <p class="lead">Abonnement étudiants. Résiliable à tout moment.</p>
-  <div class="grid">
-    <div class="card">
+<main class="site-main">
+  <p class="site-crumb">
+    <span>Droit public et administratif</span>
+    <span class="sep">›</span>
+    <a href="../">Grands arrêts</a>
+    <span class="sep">›</span>
+    <strong>Abonnements</strong>
+  </p>
+  <p class="site-hero-kicker">Accès abonné</p>
+  <h1 class="site-title">Abonnements</h1>
+  <p class="site-lead">Débloque Flipcards (et les prochains exercices de la collection). Résiliable à tout moment.</p>
+
+  <div class="site-grid">
+    <div class="site-card">
       <h2>Mensuel</h2>
-      <div class="price">6,90 €<span style="font-size:.9rem;font-weight:500"> / mois</span></div>
+      <div class="site-price">6,90 €<span> / mois</span></div>
       <p>Accès complet + mises à jour pendant l’abonnement.</p>
       <a class="btn" id="btn-monthly" href="#configure">Choisir mensuel</a>
     </div>
-    <div class="card">
+    <div class="site-card">
       <h2>Annuel</h2>
-      <div class="price">59 €<span style="font-size:.9rem;font-weight:500"> / an</span></div>
+      <div class="site-price">59 €<span> / an</span></div>
       <p>≈ 2 mois offerts. Idéal pour l’année universitaire.</p>
       <a class="btn" id="btn-yearly" href="#configure">Choisir annuel</a>
     </div>
-    <div class="card test">
+    <div class="site-card test">
       <h2>Test</h2>
-      <div class="price">Test<span style="font-size:.9rem;font-weight:500"> / abo</span></div>
+      <div class="site-price">Test<span> / abo</span></div>
       <p>Lien Stripe de test (parcours paiement → page merci).</p>
       <a class="btn secondary" id="btn-test" href="#configure">Payer (test)</a>
     </div>
   </div>
-  <p class="note">Paiement securise Stripe. Le paiement s’ouvre hors de Notion (nouvel onglet) — requis pour 3D Secure.</p>
-  <p><a class="btn secondary" href="../demo/">Essayer la démo (8 cartes)</a></p>
+  <p class="site-note">Paiement sécurisé Stripe. Le checkout s’ouvre hors de Notion (nouvel onglet) — requis pour 3D Secure.</p>
+  <p class="site-foot"><a class="btn secondary" href="../demo/">Essayer la démo (8 cartes)</a></p>
 </main>
 <script>
 window.FLIPCARDS_CHECKOUT = {
@@ -77,7 +71,7 @@ window.FLIPCARDS_CHECKOUT = {
     } else {
       btn.addEventListener("click", (e) => {
         e.preventDefault();
-        alert("Checkout a configurer : Payment Links Stripe.");
+        alert("Checkout à configurer : Payment Links Stripe.");
       });
     }
   }
@@ -89,15 +83,17 @@ window.FLIPCARDS_CHECKOUT = {
 
   if (inIframe) {
     const note = document.createElement("p");
-    note.className = "note";
+    note.className = "site-note";
     const fallback = cfg.test || cfg.monthly || cfg.yearly || "#";
     note.innerHTML =
       'Si le paiement ne s’ouvre pas : <a href="' +
       fallback +
-      '" target="_blank" rel="noopener">ouvrir le checkout en plein ecran</a>.';
+      '" target="_blank" rel="noopener">ouvrir le checkout en plein écran</a>.';
     document.querySelector("main").appendChild(note);
   }
 })();
 </script>
+<script src="../auth.js?v=4"></script>
+<script src="../site-nav.js?v=1"></script>
 </body>
 </html>
