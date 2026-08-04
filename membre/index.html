@@ -22,7 +22,7 @@ button { margin-top:1rem; display:inline-block; width:100%; text-align:center; b
 <body>
   <div class="box" id="login">
     <h1>Connexion membre</h1>
-    <p>E-mail utilisé chez Stripe + mot de passe reçu après enregistrement.</p>
+    <p>E-mail utilisé chez Stripe + mot de passe d’accès (communiqué après activation du compte).</p>
     <form id="f" autocomplete="on">
       <label for="email">E-mail</label>
       <input id="email" type="email" required placeholder="prenom@univ.fr" autocomplete="username">
@@ -34,7 +34,7 @@ button { margin-top:1rem; display:inline-block; width:100%; text-align:center; b
     <p style="font-size:.85rem;margin-top:1rem"><a href="../checkout/">Pas encore abonné ?</a></p>
   </div>
 <script>
-const ALLOW = {"test-e2e@flipcards.local": {"statut": "essai", "offre": "mensuel", "hash": "a166050c60e56943a0eafbece453d30449aa76d669c3e38069ca93246e2c5986"}};
+const ALLOW = {"antonin.pechard@gmail.com": {"statut": "actif", "offre": "test", "hash": "21ad275170c62faaa1dfd40635a81584ede3618da19ef78940e1abcbb23cf040"}, "test-e2e@flipcards.local": {"statut": "essai", "offre": "mensuel", "hash": "a166050c60e56943a0eafbece453d30449aa76d669c3e38069ca93246e2c5986"}};
 async function sha256(text) {
   const data = new TextEncoder().encode(text);
   const buf = await crypto.subtle.digest("SHA-256", data);
