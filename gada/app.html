@@ -4939,18 +4939,15 @@ function selectedList(group) {
   return [...selected[group]];
 }
 
-function matchesFiltersExcept(card, exceptGroup) {
+function matchesFilters(card) {
   const themes = selectedList("theme");
   const notions = selectedList("notion");
   const levels = selectedList("importance").map(Number);
-  if (exceptGroup !== "theme" && themes.length && !(card.themes || []).some(t => themes.includes(t))) return false;
-  if (exceptGroup !== "notion" && notions.length && !(card.notions || []).some(n => notions.includes(n))) return false;
-  if (exceptGroup !== "importance" && levels.length && !levels.includes(Number(card.importance_level) || 0)) return false;
+  // Cascade AND : thème ∩ (notions en OU) ∩ (niveaux ★ en OU)
+  if (themes.length && !(card.themes || []).some(t => themes.includes(t))) return false;
+  if (notions.length && !(card.notions || []).some(n => notions.includes(n))) return false;
+  if (levels.length && !levels.includes(Number(card.importance_level) || 0)) return false;
   return true;
-}
-
-function matchesFilters(card) {
-  return matchesFiltersExcept(card, null);
 }
 
 function filteredIndexes() {
@@ -4970,12 +4967,12 @@ function selectionHint() {
 }
 
 function updateHomeCount() {
+  updateChipAvailability();
   const n = filteredIndexes().length;
   homeCount.textContent = String(n);
   homeHint.textContent = selectionHint();
   btnStart.disabled = n === 0;
   btnRandom.disabled = n === 0;
-  updateChipAvailability();
 }
 
 function tagsPresentInData() {
@@ -4991,44 +4988,69 @@ function tagsPresentInData() {
   return { themes, notions, importance };
 }
 
-function compatibleTagSetsExcept(exceptGroup) {
-  const themes = new Set();
-  const notions = new Set();
-  const importance = new Set();
+/** Capsules disponibles selon la cascade thème → notions → importance. */
+function cascadeTagSets(opts) {
+  const ignoreNotion = !!(opts && opts.ignoreNotion);
+  const ignoreImportance = !!(opts && opts.ignoreImportance);
+  const themes = selectedList("theme");
+  const notions = selectedList("notion");
+  const levels = selectedList("importance").map(Number);
+  const outThemes = new Set();
+  const outNotions = new Set();
+  const outImportance = new Set();
   for (const card of DATA) {
-    if (!matchesFiltersExcept(card, exceptGroup)) continue;
-    (card.themes || []).forEach(t => themes.add(t));
-    (card.notions || []).forEach(n => notions.add(n));
+    if (themes.length && !(card.themes || []).some(t => themes.includes(t))) continue;
+    if (!ignoreNotion && notions.length && !(card.notions || []).some(n => notions.includes(n))) continue;
+    if (!ignoreImportance && levels.length && !levels.includes(Number(card.importance_level) || 0)) continue;
+    (card.themes || []).forEach(t => outThemes.add(t));
+    (card.notions || []).forEach(n => outNotions.add(n));
     const lvl = Number(card.importance_level) || 0;
-    if (lvl) importance.add(String(lvl));
+    if (lvl) outImportance.add(String(lvl));
   }
-  return { themes, notions, importance };
+  return { themes: outThemes, notions: outNotions, importance: outImportance };
 }
 
 function updateChipAvailability() {
   const present = tagsPresentInData();
-  const anyFilter = selected.theme.size > 0 || selected.notion.size > 0 || selected.importance.size > 0;
   const themeExclusive = selected.theme.size > 0;
-  document.querySelectorAll(".chip").forEach(btn => {
-    const group = btn.dataset.group;
+
+  document.querySelectorAll('.chip[data-group="theme"]').forEach(btn => {
     const value = btn.dataset.value;
-    const isSelected = selected[group].has(value);
-    let ok = true;
-    if (group === "theme") ok = present.themes.has(value);
-    else if (group === "notion") ok = present.notions.has(value);
-    else if (group === "importance") ok = present.importance.has(value);
-    // Pour chaque groupe, ignorer ce groupe dans la compatibilité
-    // (sinon Importance ne peut plus cumuler ★ + ★★ + …)
-    if (ok && anyFilter && !isSelected) {
-      const compatible = compatibleTagSetsExcept(group);
-      if (group === "theme") ok = compatible.themes.has(value);
-      else if (group === "notion") ok = compatible.notions.has(value);
-      else if (group === "importance") ok = compatible.importance.has(value);
-    }
-    // Thème = 1 seul choix : ombrer les autres capsules (cliquables pour changer)
-    const exclusiveDim = group === "theme" && themeExclusive && !isSelected && ok;
+    const isSelected = selected.theme.has(value);
+    const ok = present.themes.has(value);
+    const exclusiveDim = themeExclusive && !isSelected && ok;
     btn.classList.toggle("is-disabled", !ok);
     btn.classList.toggle("is-exclusive-dim", exclusiveDim);
+    btn.disabled = !ok;
+    btn.setAttribute("aria-disabled", ok ? "false" : "true");
+  });
+
+  // Notions réduites par thème (+ importance si choisie) ; cumul multi-notions
+  const notionScope = cascadeTagSets({ ignoreNotion: true });
+  document.querySelectorAll('.chip[data-group="notion"]').forEach(btn => {
+    const value = btn.dataset.value;
+    const ok = notionScope.notions.has(value);
+    if (selected.notion.has(value) && !ok) {
+      selected.notion.delete(value);
+      btn.setAttribute("aria-pressed", "false");
+    }
+    btn.classList.toggle("is-disabled", !ok);
+    btn.classList.remove("is-exclusive-dim");
+    btn.disabled = !ok;
+    btn.setAttribute("aria-disabled", ok ? "false" : "true");
+  });
+
+  // Étoiles réduites par thème + notions ; cumul multi-★
+  const starScope = cascadeTagSets({ ignoreImportance: true });
+  document.querySelectorAll('.chip[data-group="importance"]').forEach(btn => {
+    const value = btn.dataset.value;
+    const ok = starScope.importance.has(value);
+    if (selected.importance.has(value) && !ok) {
+      selected.importance.delete(value);
+      btn.setAttribute("aria-pressed", "false");
+    }
+    btn.classList.toggle("is-disabled", !ok);
+    btn.classList.remove("is-exclusive-dim");
     btn.disabled = !ok;
     btn.setAttribute("aria-disabled", ok ? "false" : "true");
   });
