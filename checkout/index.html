@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S’abonner — Flipcards GAJA</title>
+<style>
+:root { --ink:#1a1a1a; --muted:#6b7280; --accent:#0f766e; --bg:#f8faf9; --card:#fff; --border:#e5e7eb; }
+* { box-sizing:border-box }
+body { margin:0; font-family: Georgia, "Times New Roman", serif; color:var(--ink);
+  background: radial-gradient(1000px 500px at 0% 0%, #d1fae5, transparent 50%), var(--bg); padding:2rem 1rem; }
+main { max-width:720px; margin:0 auto; }
+h1 { font-size: clamp(1.6rem, 3vw, 2.2rem); margin:0 0 .5rem; }
+.lead { font-family:system-ui,sans-serif; color:var(--muted); line-height:1.5; }
+.grid { display:grid; gap:1rem; margin:1.5rem 0; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); }
+.card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.25rem; }
+.card h2 { margin:0 0 .35rem; font-size:1.2rem; }
+.price { font-family:system-ui,sans-serif; font-size:1.6rem; font-weight:700; color:var(--accent); }
+.card p { font-family:system-ui,sans-serif; color:var(--muted); font-size:.92rem; }
+a.btn { display:inline-block; margin-top:.8rem; background:var(--accent); color:#fff; text-decoration:none;
+  font-family:system-ui,sans-serif; font-weight:600; padding:.7rem 1rem; border-radius:8px; }
+a.btn.secondary { background:#fff; color:var(--accent); border:1px solid var(--accent); }
+.note { font-family:system-ui,sans-serif; font-size:.85rem; color:var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Flipcards GAJA — abonnement étudiants</h1>
+  <p class="lead">Accès aux flipcards des grands arrêts du droit public et administratif. Résiliable à tout moment.</p>
+  <div class="grid">
+    <div class="card">
+      <h2>Mensuel</h2>
+      <div class="price">6,90 €<span style="font-size:.9rem;font-weight:500"> / mois</span></div>
+      <p>Accès complet + mises à jour pendant l’abonnement.</p>
+      <a class="btn" id="btn-monthly" href="#configure">Choisir mensuel</a>
+    </div>
+    <div class="card">
+      <h2>Annuel</h2>
+      <div class="price">59 €<span style="font-size:.9rem;font-weight:500"> / an</span></div>
+      <p>≈ 2 mois offerts. Idéal pour l’année universitaire.</p>
+      <a class="btn" id="btn-yearly" href="#configure">Choisir annuel</a>
+    </div>
+  </div>
+  <p class="note">Paiement sécurisé Lemon Squeezy (TVA UE incluse selon ton pays). Après paiement → espace membre → flipcards.</p>
+  <p><a class="btn secondary" href="../demo/">Essayer la démo (8 cartes)</a></p>
+</main>
+<script>
+// Rempli au build / deploy depuis commerce/config.json
+window.FLIPCARDS_CHECKOUT = {
+  monthly: "",
+  yearly: ""
+};
+(function(){
+  const m = document.getElementById('btn-monthly');
+  const y = document.getElementById('btn-yearly');
+  if (window.FLIPCARDS_CHECKOUT.monthly) m.href = window.FLIPCARDS_CHECKOUT.monthly;
+  else m.addEventListener('click', e => { e.preventDefault(); alert('Checkout Lemon Squeezy à configurer (LEMON_SQUEEZY_API_KEY + setup_lemonsqueezy.py).'); });
+  if (window.FLIPCARDS_CHECKOUT.yearly) y.href = window.FLIPCARDS_CHECKOUT.yearly;
+  else y.addEventListener('click', e => { e.preventDefault(); alert('Checkout Lemon Squeezy à configurer (LEMON_SQUEEZY_API_KEY + setup_lemonsqueezy.py).'); });
+})();
+</script>
+</body>
+</html>

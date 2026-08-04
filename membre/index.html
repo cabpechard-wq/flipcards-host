@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Espace membre — Flipcards</title>
+<style>
+:root { --ink:#1a1a1a; --muted:#6b7280; --accent:#0f766e; --bg:#f8faf9; --card:#fff; --border:#e5e7eb; }
+body { margin:0; min-height:100vh; display:grid; place-items:center; font-family:system-ui,sans-serif;
+  background: radial-gradient(900px 500px at 10% 0%, #d1fae5, var(--bg)); color:var(--ink); padding:1.5rem; }
+.box { width:min(440px,100%); background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.5rem; }
+h1 { font-family: Georgia, serif; font-size:1.35rem; margin:0 0 .4rem; }
+p { color:var(--muted); line-height:1.45; }
+input { width:100%; padding:.7rem .8rem; border:1px solid var(--border); border-radius:8px; font-size:1rem; }
+button, .btn { margin-top:.8rem; display:inline-block; width:100%; text-align:center; border:0; border-radius:8px;
+  padding:.75rem 1rem; background:var(--accent); color:#fff; font-weight:600; text-decoration:none; cursor:pointer; }
+.err { color:#b91c1c; min-height:1.2em; font-size:.9rem; }
+.ok { display:none; }
+code { background:#f3f4f6; padding:.1rem .35rem; border-radius:4px; }
+</style>
+</head>
+<body>
+  <div class="box" id="login">
+    <h1>Espace membre</h1>
+    <p>Entre l’e-mail utilisé pour l’abonnement.</p>
+    <form id="f">
+      <input id="email" type="email" required placeholder="prenom@univ.fr" autocomplete="email">
+      <button type="submit">Accéder</button>
+      <div class="err" id="err"></div>
+    </form>
+    <p style="font-size:.85rem;margin-top:1rem"><a href="../checkout/">Pas encore abonné ?</a></p>
+  </div>
+  <div class="box ok" id="access">
+    <h1>Bienvenue</h1>
+    <p>Statut : <strong id="st"></strong> · Offre : <strong id="of"></strong></p>
+    <p>Mot de passe flipcards : <code id="pw"></code></p>
+    <a class="btn" id="open" href="../gaja/">Ouvrir les flipcards</a>
+  </div>
+<script>
+const ALLOW = {"test-e2e@flipcards.local": {"statut": "essai", "offre": "mensuel"}};
+const PASSWORD = "nkncaJaAHlfP";
+const form = document.getElementById('f');
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const row = ALLOW[email];
+  const err = document.getElementById('err');
+  if (!row || !['actif','essai'].includes(row.statut)) {
+    err.textContent = 'Aucun abonnement actif pour cet e-mail.';
+    return;
+  }
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('access').style.display = 'block';
+  document.getElementById('st').textContent = row.statut;
+  document.getElementById('of').textContent = row.offre || '—';
+  document.getElementById('pw').textContent = PASSWORD;
+  sessionStorage.setItem('flipcards_member', email);
+});
+</script>
+</body>
+</html>
