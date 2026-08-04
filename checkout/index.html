@@ -35,12 +35,6 @@
       <p>≈ 2 mois offerts. Idéal pour l’année universitaire.</p>
       <a class="btn" id="btn-yearly" href="#configure" aria-disabled="true">Choisir annuel</a>
     </div>
-    <div class="site-card test">
-      <h2>Test</h2>
-      <div class="site-price">Test<span> / abo</span></div>
-      <p>Lien Stripe de test (parcours paiement → page merci).</p>
-      <a class="btn secondary" id="btn-test" href="#configure" aria-disabled="true">Payer (test)</a>
-    </div>
   </div>
 
   <label class="checkout-consent" for="cgv-consent">
@@ -59,8 +53,7 @@
 <script>
 window.FLIPCARDS_CHECKOUT = {
   monthly: "https://buy.stripe.com/6oUaEWgWQgc21PO8QPawo01",
-  yearly: "https://buy.stripe.com/14AdR88qk3pgeCA0kjawo00",
-  test: "https://buy.stripe.com/00w7sK0XS2lc8ecgjhawo02"
+  yearly: "https://buy.stripe.com/14AdR88qk3pgeCA0kjawo00"
 };
 (function () {
   const inIframe = (() => {
@@ -71,7 +64,6 @@ window.FLIPCARDS_CHECKOUT = {
   const buttons = [
     document.getElementById("btn-monthly"),
     document.getElementById("btn-yearly"),
-    document.getElementById("btn-test"),
   ].filter(Boolean);
 
   function setEnabled(ok) {
@@ -115,7 +107,6 @@ window.FLIPCARDS_CHECKOUT = {
   const cfg = window.FLIPCARDS_CHECKOUT;
   wire(document.getElementById("btn-monthly"), cfg.monthly);
   wire(document.getElementById("btn-yearly"), cfg.yearly);
-  wire(document.getElementById("btn-test"), cfg.test);
 
   consent.addEventListener("change", () => setEnabled(consent.checked));
   setEnabled(false);
@@ -123,7 +114,7 @@ window.FLIPCARDS_CHECKOUT = {
   if (inIframe) {
     const note = document.createElement("p");
     note.className = "site-note";
-    const fallback = cfg.test || cfg.monthly || cfg.yearly || "#";
+    const fallback = cfg.monthly || cfg.yearly || "#";
     note.innerHTML =
       'Si le paiement ne s’ouvre pas : <a href="' +
       fallback +
