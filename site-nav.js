@@ -20,7 +20,7 @@
   header.className = "site-nav";
   header.innerHTML =
     '<a class="site-nav-brand" href="' + abs("index.html") + '">' +
-      '<span class="site-nav-kicker">Droit public et administratif</span>' +
+      '<span class="site-nav-kicker">Éditions Particulières</span>' +
       '<span class="site-nav-product">Grands arrêts</span>' +
     "</a>" +
     '<nav class="site-nav-links" aria-label="Navigation">' +
@@ -89,7 +89,10 @@
   footer.className = "site-footer";
   footer.innerHTML =
     '<div class="site-footer-inner">' +
-      '<p class="site-footer-brand">CABINET PECHARD — Grands arrêts du droit public et administratif</p>' +
+      '<div class="site-footer-meta">' +
+        '<p class="site-footer-brand">Éditions Particulières — Grands arrêts du droit public et administratif</p>' +
+        '<p class="site-footer-copy">© Éditions Particulières · Tous droits réservés · Reproductions / exportations interdites</p>' +
+      "</div>" +
       '<nav class="site-footer-links" aria-label="Informations légales">' +
         '<a href="' + abs("mentions-legales/") + '">Mentions légales</a>' +
         '<a href="' + abs("cgv/") + '">CGV</a>' +

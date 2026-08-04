@@ -685,6 +685,12 @@ body { padding: 0 0 3.5rem; background: #ffffff; }
 .term-row[hidden] { display: none !important; }
 .term-recto { font-family: var(--font-display); font-weight: 650; font-size: 1rem; }
 .term-verso { color: #4b5563; line-height: 1.45; font-size: .9rem; }
+.study-copy {
+  margin: 1rem 0 0;
+  font-size: .72rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
 @media (max-width: 720px) {
   .term-row { grid-template-columns: 1fr; }
   .controls { grid-template-columns: auto 1fr auto; }
@@ -1065,6 +1071,7 @@ body { padding: 0 0 3.5rem; background: #ffffff; }
   <div class="term-verso">En matière de concession de service public, le concédant dispose en principe du libre choix du concessionnaire, sous le contrôle du juge, sans qu&#x27;une procédure générale de sélection soit requise.</div>
 </li>
       </ul>
+      <p class="study-copy">© Éditions Particulières · Tous droits réservés · Reproductions / exportations interdites</p>
     </section>
   </section>
 </div>
@@ -1783,6 +1790,6 @@ document.addEventListener("keydown", (e) => {
 updateHomeCount();
 </script>
 <script src="../auth.js?v=4"></script>
-<script src="../site-nav.js?v=1"></script>
+<script src="../site-nav.js?v=2"></script>
 </body>
 </html>
