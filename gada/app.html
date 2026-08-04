@@ -4940,13 +4940,17 @@ function selectedList(group) {
 }
 
 function matchesFilters(card) {
+  return matchesFiltersExcept(card, null);
+}
+
+/** Lot courant : thème ∩ (notions en OU) ∩ (★ en OU). exceptGroup = pair multi-select. */
+function matchesFiltersExcept(card, exceptGroup) {
   const themes = selectedList("theme");
   const notions = selectedList("notion");
   const levels = selectedList("importance").map(Number);
-  // Cascade AND : thème ∩ (notions en OU) ∩ (niveaux ★ en OU)
   if (themes.length && !(card.themes || []).some(t => themes.includes(t))) return false;
-  if (notions.length && !(card.notions || []).some(n => notions.includes(n))) return false;
-  if (levels.length && !levels.includes(Number(card.importance_level) || 0)) return false;
+  if (exceptGroup !== "notion" && notions.length && !(card.notions || []).some(n => notions.includes(n))) return false;
+  if (exceptGroup !== "importance" && levels.length && !levels.includes(Number(card.importance_level) || 0)) return false;
   return true;
 }
 
@@ -4967,6 +4971,7 @@ function selectionHint() {
 }
 
 function updateHomeCount() {
+  // Disponibilité d'abord (peut élaguer une sélection devenue hors lot)
   updateChipAvailability();
   const n = filteredIndexes().length;
   homeCount.textContent = String(n);
@@ -4988,124 +4993,71 @@ function tagsPresentInData() {
   return { themes, notions, importance };
 }
 
-/** Capsules disponibles selon la cascade thème → notions → importance. */
-function cascadeTagSets(opts) {
-  const ignoreNotion = !!(opts && opts.ignoreNotion);
-  const ignoreImportance = !!(opts && opts.ignoreImportance);
-  const themes = selectedList("theme");
-  const notions = selectedList("notion");
-  const levels = selectedList("importance").map(Number);
-  const outThemes = new Set();
-  const outNotions = new Set();
-  const outImportance = new Set();
-  for (const card of DATA) {
-    if (themes.length && !(card.themes || []).some(t => themes.includes(t))) continue;
-    if (!ignoreNotion && notions.length && !(card.notions || []).some(n => notions.includes(n))) continue;
-    if (!ignoreImportance && levels.length && !levels.includes(Number(card.importance_level) || 0)) continue;
-    (card.themes || []).forEach(t => outThemes.add(t));
-    (card.notions || []).forEach(n => outNotions.add(n));
-    const lvl = Number(card.importance_level) || 0;
-    if (lvl) outImportance.add(String(lvl));
-  }
-  return { themes: outThemes, notions: outNotions, importance: outImportance };
-}
-
-function importanceLevelsWhere(pred) {
-  const levels = new Set();
-  for (const card of DATA) {
-    if (!pred(card)) continue;
-    const lvl = Number(card.importance_level) || 0;
-    if (lvl) levels.add(String(lvl));
-  }
-  return levels;
-}
-
-function intersectSets(sets) {
-  if (!sets.length) return new Set();
-  let acc = new Set(sets[0]);
-  for (let i = 1; i < sets.length; i++) {
-    const other = sets[i];
-    acc = new Set([...acc].filter(v => other.has(v)));
-  }
-  return acc;
-}
-
 /**
- * ★ disponibles : uniquement réduction.
- * Le lot cartes reste en OU sur les notions, mais les capsules Importance
- * = intersection des ★ de chaque notion (sous le thème) — ajouter une
- * notion ne peut jamais rouvrir un niveau d'étoiles.
+ * Cascade fermée :
+ * 1) Thème (1 choix) borne l'univers.
+ * 2) Notions ↔ Importance se refiltrent mutuellement sur le lot
+ *    (on ignore uniquement le groupe de la capsule pour permettre le multi).
  */
-function availableImportanceLevels() {
-  const themes = selectedList("theme");
-  const notions = selectedList("notion");
-  const inTheme = (card) =>
-    !themes.length || (card.themes || []).some(t => themes.includes(t));
-  if (!notions.length) return importanceLevelsWhere(inTheme);
-  return intersectSets(
-    notions.map(n =>
-      importanceLevelsWhere(
-        card => inTheme(card) && (card.notions || []).includes(n)
-      )
-    )
-  );
+function tagsInLotExcept(exceptGroup) {
+  const notions = new Set();
+  const importance = new Set();
+  for (const card of DATA) {
+    if (!matchesFiltersExcept(card, exceptGroup)) continue;
+    (card.notions || []).forEach(n => notions.add(n));
+    const lvl = Number(card.importance_level) || 0;
+    if (lvl) importance.add(String(lvl));
+  }
+  return { notions, importance };
+}
+
+function setChipState(btn, ok, exclusiveDim) {
+  btn.classList.toggle("is-disabled", !ok);
+  btn.classList.toggle("is-exclusive-dim", !!exclusiveDim);
+  btn.disabled = !ok;
+  btn.setAttribute("aria-disabled", ok ? "false" : "true");
 }
 
 function updateChipAvailability() {
   const present = tagsPresentInData();
   const themeExclusive = selected.theme.size > 0;
-  const hasImportance = selected.importance.size > 0;
-  const hasNotions = selected.notion.size > 0;
 
-  document.querySelectorAll('.chip[data-group="theme"]').forEach(btn => {
-    const value = btn.dataset.value;
-    const isSelected = selected.theme.has(value);
-    const ok = present.themes.has(value);
-    const exclusiveDim = themeExclusive && !isSelected && ok;
-    btn.classList.toggle("is-disabled", !ok);
-    btn.classList.toggle("is-exclusive-dim", exclusiveDim);
-    btn.disabled = !ok;
-    btn.setAttribute("aria-disabled", ok ? "false" : "true");
-  });
+  let notionLot = tagsInLotExcept("notion");
+  let starLot = tagsInLotExcept("importance");
 
-  // Notions : réduites par le thème ; si importance choisie sans notions,
-  // réduites aussi par les ★. Dès que des notions + une importance sont
-  // actives, on verrouille : pas de nouvelles notions (évite les co-tags
-  // multi-notions qui réouvrent des décisions hors cadre).
-  let notionOk;
-  if (hasImportance && hasNotions) {
-    notionOk = new Set(selectedList("notion"));
-  } else if (hasImportance) {
-    notionOk = cascadeTagSets({ ignoreNotion: true }).notions;
-  } else {
-    notionOk = cascadeTagSets({ ignoreNotion: true, ignoreImportance: true }).notions;
-  }
   document.querySelectorAll('.chip[data-group="notion"]').forEach(btn => {
-    const value = btn.dataset.value;
-    const ok = notionOk.has(value);
-    if (selected.notion.has(value) && !ok) {
-      selected.notion.delete(value);
+    if (selected.notion.has(btn.dataset.value) && !notionLot.notions.has(btn.dataset.value)) {
+      selected.notion.delete(btn.dataset.value);
       btn.setAttribute("aria-pressed", "false");
     }
-    btn.classList.toggle("is-disabled", !ok);
-    btn.classList.remove("is-exclusive-dim");
-    btn.disabled = !ok;
-    btn.setAttribute("aria-disabled", ok ? "false" : "true");
+  });
+  document.querySelectorAll('.chip[data-group="importance"]').forEach(btn => {
+    if (selected.importance.has(btn.dataset.value) && !starLot.importance.has(btn.dataset.value)) {
+      selected.importance.delete(btn.dataset.value);
+      btn.setAttribute("aria-pressed", "false");
+    }
   });
 
-  // Étoiles : réduction stricte (intersection par notion), cumul multi-★ dans ce plafond
-  const starOk = availableImportanceLevels();
-  document.querySelectorAll('.chip[data-group="importance"]').forEach(btn => {
+  notionLot = tagsInLotExcept("notion");
+  starLot = tagsInLotExcept("importance");
+
+  document.querySelectorAll(".chip").forEach(btn => {
+    const group = btn.dataset.group;
     const value = btn.dataset.value;
-    const ok = starOk.has(value);
-    if (selected.importance.has(value) && !ok) {
-      selected.importance.delete(value);
-      btn.setAttribute("aria-pressed", "false");
+    const isSelected = selected[group].has(value);
+    let ok = true;
+    let exclusiveDim = false;
+
+    if (group === "theme") {
+      ok = present.themes.has(value);
+      exclusiveDim = themeExclusive && !isSelected && ok;
+    } else if (group === "notion") {
+      ok = notionLot.notions.has(value);
+    } else if (group === "importance") {
+      ok = starLot.importance.has(value);
     }
-    btn.classList.toggle("is-disabled", !ok);
-    btn.classList.remove("is-exclusive-dim");
-    btn.disabled = !ok;
-    btn.setAttribute("aria-disabled", ok ? "false" : "true");
+
+    setChipState(btn, ok, exclusiveDim);
   });
 }
 
