@@ -38,9 +38,12 @@
   --card-verso: #ffffff;
   --ink: #1a1a1a;
   --muted: #6b7280;
-  --accent: #0f766e;
-  --accent-soft: #ccfbf1;
-  --brass: #b45309;
+  --accent: #1f4f7a;
+  --accent-hover: #2a6496;
+  --accent-soft: #e8f1f7;
+  --secondary: #c56a2d;
+  --secondary-soft: #faf0e8;
+  --brass: #c56a2d;
   --border: #e5e7eb;
   --ok: #047857;
   --ok-soft: #d1fae5;
@@ -122,17 +125,17 @@ body { padding: 1.5rem 1rem 3.5rem; background: #ffffff; }
 }
 .chip-importance {
   letter-spacing: .06em;
-  color: #b45309;
-  border-color: #f0d2a8;
+  color: var(--brass);
+  border-color: #e8d5c4;
 }
 .chip-importance:hover:not(:disabled):not(.is-disabled):not([aria-pressed="true"]) {
-  color: #b45309;
-  border-color: #b45309;
+  color: var(--brass);
+  border-color: var(--brass);
 }
 .chip-importance[aria-pressed="true"],
 .chip-importance[aria-pressed="true"]:hover {
-  background: #b45309;
-  border-color: #b45309;
+  background: var(--brass);
+  border-color: var(--brass);
   color: #fff;
 }
 .chip[data-color="default"], .tag[data-color="default"] {
@@ -225,7 +228,7 @@ body { padding: 1.5rem 1rem 3.5rem; background: #ffffff; }
   font: 650 .92rem var(--font-ui); cursor: pointer;
 }
 .btn-start:disabled { opacity: .35; cursor: default; }
-.btn-start:not(:disabled):hover { background: #0d9488; }
+.btn-start:not(:disabled):hover { background: var(--accent-hover); }
 .game-bar {
   display: flex; flex-wrap: wrap; align-items: center;
   justify-content: space-between; gap: .75rem; margin-bottom: 1.15rem;
@@ -366,7 +369,7 @@ body { padding: 1.5rem 1rem 3.5rem; background: #ffffff; }
   font-size: .95rem;
   line-height: 1;
   letter-spacing: .08em;
-  color: #b45309;
+  color: var(--brass);
 }
 .face-recto .face-stars {
   font-size: 1.35rem;
