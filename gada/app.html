@@ -3,9 +3,25 @@
 <head>
 <script>
 (function(){
-  if (sessionStorage.getItem("flipcards_ok") !== "1") {
-    location.replace("./");
+  var API = "https://flipcards-auth.EXAMPLE.workers.dev";
+  var token = sessionStorage.getItem("flipcards_token") || localStorage.getItem("flipcards_token") || "";
+  function deny() {
+    sessionStorage.removeItem("flipcards_ok");
+    location.replace("../membre/");
   }
+  if (!token || !API || API.indexOf("EXAMPLE") !== -1) {
+    // Fallback admin: ancien flag session uniquement si API pas encore déployée
+    if (sessionStorage.getItem("flipcards_ok") === "1" && (!API || API.indexOf("EXAMPLE") !== -1)) {
+      return;
+    }
+    if (!token) { deny(); return; }
+  }
+  fetch(API.replace(/\/$/, "") + "/api/me", {
+    headers: { Authorization: "Bearer " + token }
+  }).then(function(r){
+    if (!r.ok) throw new Error("nope");
+    sessionStorage.setItem("flipcards_ok", "1");
+  }).catch(function(){ deny(); });
 })();
 </script>
 

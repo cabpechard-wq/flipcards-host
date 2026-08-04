@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Nouveau mot de passe — Flipcards</title>
+<style>
+:root { --ink:#1a1a1a; --muted:#6b7280; --accent:#0f766e; --bg:#f8faf9; --card:#fff; --border:#e5e7eb; }
+body { margin:0; min-height:100vh; display:grid; place-items:center; font-family:system-ui,sans-serif;
+  background: radial-gradient(900px 500px at 10% 0%, #d1fae5, var(--bg)); color:var(--ink); padding:1.5rem; }
+.box { width:min(440px,100%); background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.5rem; }
+h1 { font-family: Georgia, serif; font-size:1.3rem; }
+p { color:var(--muted); }
+label { display:block; margin:.75rem 0 .35rem; }
+input { width:100%; padding:.7rem .8rem; border:1px solid var(--border); border-radius:8px; box-sizing:border-box; }
+button { margin-top:1rem; width:100%; border:0; border-radius:8px; padding:.75rem 1rem; background:var(--accent); color:#fff; font-weight:600; cursor:pointer; }
+.err { color:#b91c1c; min-height:1.2em; margin-top:.5rem; }
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>Nouveau mot de passe</h1>
+  <p>4 caractères minimum.</p>
+  <form id="f">
+    <label for="pw">Mot de passe</label>
+    <input id="pw" type="password" minlength="4" required autocomplete="new-password">
+    <label for="pw2">Confirmer</label>
+    <input id="pw2" type="password" minlength="4" required autocomplete="new-password">
+    <button type="submit">Enregistrer</button>
+    <div class="err" id="err"></div>
+  </form>
+</div>
+<script src="../../auth.js"></script>
+<script>
+const token = new URLSearchParams(location.search).get("token") || "";
+if (!token) {
+  document.getElementById("err").textContent = "Lien invalide (token manquant).";
+}
+document.getElementById("f").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const err = document.getElementById("err");
+  err.textContent = "";
+  const pw = document.getElementById("pw").value;
+  const pw2 = document.getElementById("pw2").value;
+  if (pw.length < 4) { err.textContent = "4 caractères minimum."; return; }
+  if (pw !== pw2) { err.textContent = "Les mots de passe ne correspondent pas."; return; }
+  try {
+    const data = await FLIPCARDS_AUTH.api("/api/reset", {
+      method: "POST",
+      body: { token, password: pw },
+    });
+    FLIPCARDS_AUTH.setToken(data.token, true);
+    location.replace("../../gada/app.html");
+  } catch (ex) {
+    err.textContent = ex.message || "Erreur";
+  }
+});
+</script>
+</body>
+</html>

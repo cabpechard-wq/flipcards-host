@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
+<meta http-equiv="Cache-Control" content="no-cache">
 <title>Connexion — Flipcards</title>
 <style>
 :root { --ink:#1a1a1a; --muted:#6b7280; --accent:#0f766e; --bg:#f8faf9; --card:#fff; --border:#e5e7eb; }
@@ -14,59 +15,64 @@ h1 { font-family: Georgia, serif; font-size:1.35rem; margin:0 0 .4rem; }
 p { color:var(--muted); line-height:1.45; }
 label { display:block; margin:.75rem 0 .35rem; font-size:.9rem; color:var(--ink); }
 input { width:100%; padding:.7rem .8rem; border:1px solid var(--border); border-radius:8px; font-size:1rem; box-sizing:border-box; }
-button { margin-top:1rem; display:inline-block; width:100%; text-align:center; border:0; border-radius:8px;
-  padding:.75rem 1rem; background:var(--accent); color:#fff; font-weight:600; cursor:pointer; }
+button { margin-top:1rem; width:100%; border:0; border-radius:8px; padding:.75rem 1rem; background:var(--accent); color:#fff; font-weight:600; cursor:pointer; }
 .err { color:#b91c1c; min-height:1.2em; font-size:.9rem; margin-top:.5rem; }
+.links { font-size:.85rem; margin-top:1rem; line-height:1.7; }
+.links a { color:var(--accent); }
 </style>
 </head>
 <body>
-  <div class="box" id="login">
+  <div class="box">
     <h1>Connexion membre</h1>
-    <p>E-mail utilisé chez Stripe + mot de passe d’accès (communiqué après activation du compte).</p>
+    <p>E-mail Stripe + mot de passe choisi après paiement.</p>
     <form id="f" autocomplete="on">
       <label for="email">E-mail</label>
-      <input id="email" type="email" required placeholder="prenom@univ.fr" autocomplete="username">
+      <input id="email" type="email" required autocomplete="username">
       <label for="pw">Mot de passe</label>
-      <input id="pw" type="password" required autocomplete="current-password">
+      <input id="pw" type="password" required minlength="4" autocomplete="current-password">
+      <label style="display:flex;align-items:center;gap:.4rem;font-weight:400;color:var(--muted)">
+        <input type="checkbox" id="remember" checked style="width:auto"> Rester connecté sur cet appareil
+      </label>
       <button type="submit">Se connecter</button>
       <div class="err" id="err"></div>
     </form>
-    <p style="font-size:.85rem;margin-top:1rem"><a href="../checkout/">Pas encore abonné ?</a></p>
+    <div class="links">
+      <a href="./forgot/">Mot de passe oublié</a><br>
+      <a href="./compte/">Modifier le mot de passe</a><br>
+      <a href="../checkout/">Pas encore abonné ?</a>
+    </div>
   </div>
+<script src="../auth.js"></script>
 <script>
-const ALLOW = {"antonin.pechard@gmail.com": {"statut": "actif", "offre": "test", "hash": "937e8d5fbb48bd4949536cd65b8d35c426b80d2f830c5c308e2cdec422ae2244"}, "test-e2e@flipcards.local": {"statut": "essai", "offre": "mensuel", "hash": "a166050c60e56943a0eafbece453d30449aa76d669c3e38069ca93246e2c5986"}};
-async function sha256(text) {
-  const data = new TextEncoder().encode(text);
-  const buf = await crypto.subtle.digest("SHA-256", data);
-  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,"0")).join("");
-}
-const form = document.getElementById('f');
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const err = document.getElementById('err');
-  err.textContent = '';
-  const email = document.getElementById('email').value.trim().toLowerCase();
-  const pw = document.getElementById('pw').value.trim();
-  const row = ALLOW[email];
-  if (!row || !['actif','essai'].includes(row.statut) || !row.hash) {
-    err.textContent = 'Aucun compte actif pour cet e-mail.';
+(async function () {
+  const q = new URLSearchParams(location.search);
+  if (q.get("email")) document.getElementById("email").value = q.get("email");
+
+  const me = await FLIPCARDS_AUTH.requireSession();
+  if (me) {
+    location.replace("../gada/app.html");
     return;
   }
-  let h;
-  try {
-    h = await sha256(pw);
-  } catch (ex) {
-    err.textContent = 'Navigateur incompatible (ouvre la page en HTTPS, hors iframe).';
-    return;
-  }
-  if (h !== row.hash) {
-    err.textContent = 'Mot de passe incorrect.';
-    return;
-  }
-  sessionStorage.setItem('flipcards_member', email);
-  sessionStorage.setItem('flipcards_ok', '1');
-  location.replace('../gada/app.html');
-});
+
+  document.getElementById("f").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const err = document.getElementById("err");
+    err.textContent = "";
+    try {
+      const data = await FLIPCARDS_AUTH.api("/api/login", {
+        method: "POST",
+        body: {
+          email: document.getElementById("email").value.trim(),
+          password: document.getElementById("pw").value,
+        },
+      });
+      FLIPCARDS_AUTH.setToken(data.token, document.getElementById("remember").checked);
+      location.replace("../gada/app.html");
+    } catch (ex) {
+      err.textContent = ex.message || "Erreur";
+    }
+  });
+})();
 </script>
 </body>
 </html>
