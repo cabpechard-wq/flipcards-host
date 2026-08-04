@@ -346,6 +346,7 @@ body { padding: 1.5rem 1rem 3.5rem; background: #ffffff; }
   background: #ffffff;
   transform: rotateY(180deg);
   place-items: stretch stretch;
+  position: relative;
 }
 .face-body {
   display: grid; place-items: center;
@@ -373,6 +374,69 @@ body { padding: 1.5rem 1rem 3.5rem; background: #ffffff; }
   width: 100%;
 }
 .def.is-empty { color: var(--muted); font-style: italic; text-align: center; }
+.stage {
+  position: relative;
+}
+.fiche-hover {
+  position: absolute; inset: 0;
+  z-index: 6;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: .65rem;
+  padding: 1.75rem 2rem;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: rgba(255, 255, 255, .98);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-sizing: border-box;
+  text-align: left;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  cursor: default;
+  transition: opacity .15s ease, visibility .15s ease;
+}
+.stage.is-fiche-peek .fiche-hover.has-content {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+.fiche-hover h4 {
+  margin: 0 0 .2rem;
+  font-family: var(--font-display);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.fiche-hover p {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: .82rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #1f2937;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.fiche-hover p.is-empty { color: var(--muted); font-style: italic; }
+.fiche-hint {
+  margin: .35rem 0 0;
+  font-size: .68rem;
+  color: var(--muted);
+  text-align: center;
+  letter-spacing: .02em;
+}
+.flip-scene.is-flipped { cursor: help; }
+.stage.is-fiche-peek { cursor: default; }
+@media (max-width: 720px) {
+  .fiche-hover { padding: 1.35rem 1.4rem; }
+}
 .controls {
   width: 100%;
   display: grid; grid-template-columns: 1fr auto 1fr;
@@ -416,6 +480,7 @@ body { padding: 1.5rem 1rem 3.5rem; background: #ffffff; }
   border-radius: var(--radius);
   padding: .9rem 1rem; margin-bottom: .5rem;
 }
+.term-row[hidden] { display: none !important; }
 .term-recto { font-family: var(--font-display); font-weight: 650; font-size: 1rem; }
 .term-verso { color: #4b5563; line-height: 1.45; font-size: .9rem; }
 @media (max-width: 720px) {
@@ -663,6 +728,25 @@ body { padding: 1.5rem 1rem 3.5rem; background: #ffffff; }
               </div>
             </div>
           </button>
+          <div class="fiche-hover" id="fiche-hover" aria-hidden="true">
+            <div>
+              <h4>Faits</h4>
+              <p id="fiche-faits"></p>
+            </div>
+            <div>
+              <h4>Enjeu</h4>
+              <p id="fiche-enjeu"></p>
+            </div>
+            <div>
+              <h4>Solution</h4>
+              <p id="fiche-solution"></p>
+            </div>
+            <div>
+              <h4>Perspectives</h4>
+              <p id="fiche-perspective"></p>
+            </div>
+            <p class="fiche-hint">Survol · lecture seule · non sélectionnable</p>
+          </div>
         </div>
         <div class="study-under" id="controls-wrap">
           <div class="controls">
@@ -752,7 +836,7 @@ body { padding: 1.5rem 1rem 3.5rem; background: #ffffff; }
   </section>
 </div>
 <script>
-const DATA = [{"recto": "CE, 1822, Laffitte", "verso": "Toute réclamation tenant à une question politique échappe au contrôle du Conseil d'État, fondant la théorie extensive de l'acte de gouvernement selon le critère du mobile politique, abandonné ensuite par l'arrêt Prince Napoléon.", "themes": ["Compétence de la juridiction administrative"], "notions": ["Acte de gouvernement"], "importance": "⭐⭐⭐", "importance_level": 3, "objet": "Critère du mobile politique de l'acte de gouvernement.", "portee": "Fondation de la théorie extensive des actes de gouvernement : toute réclamation tenant à une question politique échappe au contrôle du Conseil d'État. Critère du mobile politique abandonné par CE, 19 février 1875, Prince Napoléon.", "considerant": "« la réclamation (...) tient à une question politique, dont la décision appartient exclusivement au gouvernement »"}, {"recto": "TC, 1873, Blanco", "verso": "La responsabilité de l'État pour les dommages causés par ses agents dans le service public échappe au Code civil et obéit à des règles spéciales, dont connaît seule l'autorité administrative : acte fondateur du droit administratif.", "themes": ["Principes du système normatif"], "notions": ["Juridiction administrative", "Préjudice indemnisable", "Service public"], "importance": "⭐⭐⭐⭐", "importance_level": 4, "objet": "Responsabilité de l'État pour les dommages causés par les personnes employées dans le service public et compétence de l'autorité administrative.", "portee": "Le Tribunal des conflits affirme que la responsabilité de l'État pour les dommages causés aux particuliers par le fait des personnes qu'il emploie dans le service public ne peut être régie par les principes du Code civil établis pour les rapports entre particuliers. Cette responsabilité obéit à des règles spéciales qui varient suivant les besoins du service et la nécessité de concilier les droits de l'État avec les droits privés. L'autorité administrative est seule compétente pour en connaître. La décision fonde l'autonomie du droit administratif et de la juridiction administrative, en consacrant l’identité du régime et de la juridiction.", "considerant": "« la responsabilité, qui peut incomber à l'État, pour les dommages causés aux particuliers par le fait des personnes qu'il emploie dans le service public, ne peut être régie par les principes qui sont établis dans le Code civil, pour les rapports de particulier à particulier ; […] cette responsabilité n'est ni générale, ni absolue ; qu'elle a ses règles spéciales qui varient suivant les besoins du service et la nécessité de concilier les droits de l'État avec les droits privés »"}, {"recto": "TC, 1873, Dugave et Bransiet", "verso": "Rendu le même jour que Blanco, cet arrêt confirme la compétence administrative pour la responsabilité de l'État du fait de ses services et amorce la référence aux principes généraux du droit.", "themes": ["Principes du système normatif"], "notions": ["Service public", "Compétence juridictionnelle", "Principes généraux du droit"], "importance": "⭐⭐⭐⭐", "importance_level": 4, "objet": "Affirmation de la compétence administrative en matière de responsabilité de l'État et première référence explicite aux principes généraux du droit.", "portee": "L'arrêt, rendu le même jour que Blanco, prolonge et amplifie ce dernier en affirmant la compétence de la juridiction administrative pour connaître de la responsabilité de l'État du fait de ses services, en raison de la spécificité des structures et de l'action administratives. Il constitue la première référence explicite à la nécessité de concilier les textes avec les principes généraux du droit, amorçant ainsi leur reconnaissance dans la jurisprudence administrative.", "considerant": ""}, {"recto": "TC, 1873, Pelletier", "verso": "La faute de service, qui se rattache à l'exécution du service public sans révéler un comportement personnel de l'agent, relève de la compétence administrative ; seule la faute personnelle détachable engage la responsabilité propre de l'agent devant le juge judiciaire.", "themes": ["Responsabilité des agents publics"], "notions": ["Service public (agent du...)", "Police générale"], "importance": "⭐⭐⭐⭐", "importance_level": 4, "objet": "Distinction entre faute personnelle et faute de service ; compétence juridictionnelle en matière de responsabilité des agents publics.", "portee": "La faute de service, qui se rattache à l'exécution du service public et ne révèle pas un comportement personnel de l'agent, relève de la compétence administrative ; seule la faute personnelle, détachable du service, engage la responsabilité propre de l'agent devant le juge judiciaire.", "considerant": "« en dehors de cet acte il n'impute aux défendeurs aucun fait personnel de nature à engager leur responsabilité particulière »"}, {"recto": "CE, 1874, Lezeret de la Maurinie", "verso": "Le refus d'une autorité supérieure d'exercer son pouvoir hiérarchique constitue une incompétence négative annulable pour excès de pouvoir : le pouvoir hiérarchique existe même sans texte l'instituant.", "themes": ["État / déconcentration"], "notions": ["Compétence", "Pouvoir hiérarchique"], "importance": "⭐⭐", "importance_level": 2, "objet": "Incompétence négative du supérieur hiérarchique refusant d’exercer son autorité", "portee": "Le refus par une autorité administrative supérieure d’exercer un pouvoir de contrôle ou d’intervention sur un acte relevant de sa compétence hiérarchique constitue une incompétence négative susceptible d’annulation pour excès de pouvoir. Cette notion distingue l’incompétence négative de l’incompétence positive et affirme que le pouvoir hiérarchique est un attribut de la fonction administrative, indépendamment de tout texte. L’arrêt préfigure la reconnaissance du contrôle hiérarchique comme garantie de l’unité de l’action administrative.", "considerant": ""}, {"recto": "CE, 1875, Prince Napoléon", "verso": "Le mobile politique d'un acte ne suffit plus à le qualifier d'acte de gouvernement insusceptible de recours ; le Conseil d'État exerce désormais son contrôle juridictionnel au fond, abandonnant ce critère.", "themes": ["Compétence de la juridiction administrative"], "notions": ["Acte de gouvernement"], "importance": "⭐⭐⭐⭐", "importance_level": 4, "objet": "Abandon du critère du mobile politique de l'acte de gouvernement.", "portee": "Le mobile politique d'un acte ne suffit plus à le qualifier d'acte de gouvernement insusceptible de recours pour excès de pouvoir ; le Conseil d'État examine au fond la radiation du requérant de l'état-major général de l'armée et rejette sa demande, exerçant ainsi son contrôle juridictionnel.", "considerant": "« dans ces conditions, le prince Napoléon-Joseph Bonaparte n'est pas fondé à se plaindre de ce que son nom a cessé d'être porté sur la liste de l'état-major général de l'armée »"}, {"recto": "CE, 1875, Pariset", "verso": "L'administration commet un détournement de pouvoir lorsqu'elle utilise une compétence dans un but différent de celui pour lequel elle lui a été conférée.", "themes": ["Actes administratifs unilatéraux"], "notions": ["Détournement de pouvoir"], "importance": "⭐⭐⭐⭐", "importance_level": 4, "objet": "Détournement de pouvoir : usage d'une compétence administrative dans un but étranger à sa finalité légale.", "portee": "L'administration commet un détournement de pouvoir lorsqu'elle utilise une compétence en vue d'un but différent de celui pour lequel cette compétence lui a été conférée ; l'arrêt consacre ce cas d'ouverture du recours pour excès de pouvoir.", "considerant": "« le préfet (...) a ainsi usé des pouvoirs de police qui lui appartenaient (...) pour un objet autre que celui à raison desquels ils lui étaient conférés »"}, {"recto": "CE, 1876, Ducatel", "verso": "En matière de contributions directes, un paiement n'est libératoire que s'il est effectué entre les mains d'une personne ayant qualité pour le recevoir ; un versement anormal n'est pas opposable à l'administration (limite au fonctionnaire de fait).", "themes": ["Actes administratifs unilatéraux"], "notions": ["Acte administratif unilatéral", "Service public (agent du...)"], "importance": "⭐", "importance_level": 1, "objet": "Limites de la théorie du fonctionnaire de fait : validité d'un paiement en matière de contributions directes.", "portee": "En matière de contributions directes, l'effet libératoire d'un paiement suppose qu'il ait été effectué entre les mains d'une personne ayant qualité pour le recevoir ; un versement accompli dans des circonstances anormales n'est pas opposable à l'administration, ce qui marque une limite à la théorie du fonctionnaire de fait.", "considerant": ""}];
+const DATA = [{"recto": "CE, 1822, Laffitte", "verso": "Toute réclamation tenant à une question politique échappe au contrôle du Conseil d'État, fondant la théorie extensive de l'acte de gouvernement selon le critère du mobile politique, abandonné ensuite par l'arrêt Prince Napoléon.", "themes": ["Compétence de la juridiction administrative"], "notions": ["Acte de gouvernement"], "importance": "⭐⭐⭐", "importance_level": 3, "objet": "Critère du mobile politique de l'acte de gouvernement.", "portee": "Fondation de la théorie extensive des actes de gouvernement : toute réclamation tenant à une question politique échappe au contrôle du Conseil d'État. Critère du mobile politique abandonné par CE, 19 février 1875, Prince Napoléon.", "considerant": "« la réclamation (...) tient à une question politique, dont la décision appartient exclusivement au gouvernement »", "faits": "Le banquier Laffitte est cessionnaire d'une créance d'arrérages de rente détenue par la princesse Borghèse, sœur de Napoléon. La loi du 12 janvier 1816 bannit la famille Bonaparte et frappe ses biens, faisant obstacle au paiement. Laffitte réclame à l'État le versement des arrérages ; le ministre des finances refuse ; Laffitte saisit le Conseil d'État.", "enjeu": "Le juge administratif peut-il connaître d'une réclamation pécuniaire qui trouve sa source dans une mesure prise à l'encontre de la famille Bonaparte, c'est-à-dire dans un acte inspiré par des considérations politiques ?", "solution": "Le Conseil d'État rejette la requête comme non recevable au motif que la réclamation tient à une question politique dont la décision appartient exclusivement au gouvernement. L'arrêt consacre le critère du mobile politique : toute décision prise pour des motifs politiques constitue un acte de gouvernement insusceptible de recours contentieux.", "perspective": "Laffitte fonde la théorie extensive des actes de gouvernement : le mobile politique suffit à exclure le contrôle juridictionnel. Ce critère, qui laisse à l'administration la maîtrise de l'étendue de son immunité, sera abandonné par CE, 19 février 1875, Prince Napoléon : la catégorie subsiste mais recentrée sur une liste finie d'actes touchant aux rapports entre pouvoirs constitutionnels et aux relations internationales."}, {"recto": "TC, 1873, Blanco", "verso": "La responsabilité de l'État pour les dommages causés par ses agents dans le service public échappe au Code civil et obéit à des règles spéciales, dont connaît seule l'autorité administrative : acte fondateur du droit administratif.", "themes": ["Principes du système normatif"], "notions": ["Juridiction administrative", "Préjudice indemnisable", "Service public"], "importance": "⭐⭐⭐⭐", "importance_level": 4, "objet": "Responsabilité de l'État pour les dommages causés par les personnes employées dans le service public et compétence de l'autorité administrative.", "portee": "Le Tribunal des conflits affirme que la responsabilité de l'État pour les dommages causés aux particuliers par le fait des personnes qu'il emploie dans le service public ne peut être régie par les principes du Code civil établis pour les rapports entre particuliers. Cette responsabilité obéit à des règles spéciales qui varient suivant les besoins du service et la nécessité de concilier les droits de l'État avec les droits privés. L'autorité administrative est seule compétente pour en connaître. La décision fonde l'autonomie du droit administratif et de la juridiction administrative, en consacrant l’identité du régime et de la juridiction.", "considerant": "« la responsabilité, qui peut incomber à l'État, pour les dommages causés aux particuliers par le fait des personnes qu'il emploie dans le service public, ne peut être régie par les principes qui sont établis dans le Code civil, pour les rapports de particulier à particulier ; […] cette responsabilité n'est ni générale, ni absolue ; qu'elle a ses règles spéciales qui varient suivant les besoins du service et la nécessité de concilier les droits de l'État avec les droits privés »", "faits": "Le 3 novembre 1871, Agnès Blanco, âgée de cinq ans et demi, passe sur la voie publique devant l'entrepôt des tabacs de Bordeaux. Un wagon poussé de l'intérieur par des ouvriers employés par l'État la renverse et lui passe sur la cuisse, dont elle doit subir l'amputation. Son père, Jean Blanco, assigne l'État et les ouvriers devant le tribunal civil de Bordeaux afin d'obtenir réparation sur le fondement des articles 1382 et suivants du Code civil. Le préfet de la Gironde oppose un déclinatoire puis élève le conflit pour que l'action dirigée contre l'État soit soumise à l'autorité administrative.", "enjeu": "L'action par laquelle Jean Blanco demande à faire déclarer l'État civilement responsable du dommage causé par les ouvriers de la manufacture peut-elle être jugée selon les règles du Code civil applicables entre particuliers, par le tribunal civil déjà saisi, ou relève-t-elle d'un régime distinct et de l'autorité administrative ?", "solution": "Le Tribunal des conflits confirme l'arrêté de conflit. La responsabilité susceptible d'incomber à l'État pour les dommages causés aux particuliers par les personnes qu'il emploie dans le service public ne peut être régie par les principes établis par le Code civil pour les rapports entre particuliers. Elle n'est ni générale ni absolue : elle obéit à des règles spéciales qui varient suivant les besoins du service et la nécessité de concilier les droits de l'État avec les droits privés. L'autorité administrative est seule compétente pour connaître de cette action.", "perspective": "Blanco est la décision fondatrice du droit administratif : elle formule, à partir d'un litige indemnitaire, l'autonomie d'un régime de responsabilité administrative et le rattachement de cette action à l'autorité administrative. Sa formule ne doit toutefois pas être transformée en critère universel : la compétence judiciaire peut conduire à l'application de règles de droit public, tandis que la construction ultérieure du service public — notamment la distinction SPA-SPIC et l'admission de services publics gérés par des personnes privées — a complexifié les critères de répartition des compétences."}, {"recto": "TC, 1873, Dugave et Bransiet", "verso": "Rendu le même jour que Blanco, cet arrêt confirme la compétence administrative pour la responsabilité de l'État du fait de ses services et amorce la référence aux principes généraux du droit.", "themes": ["Principes du système normatif"], "notions": ["Service public", "Compétence juridictionnelle", "Principes généraux du droit"], "importance": "⭐⭐⭐⭐", "importance_level": 4, "objet": "Affirmation de la compétence administrative en matière de responsabilité de l'État et première référence explicite aux principes généraux du droit.", "portee": "L'arrêt, rendu le même jour que Blanco, prolonge et amplifie ce dernier en affirmant la compétence de la juridiction administrative pour connaître de la responsabilité de l'État du fait de ses services, en raison de la spécificité des structures et de l'action administratives. Il constitue la première référence explicite à la nécessité de concilier les textes avec les principes généraux du droit, amorçant ainsi leur reconnaissance dans la jurisprudence administrative.", "considerant": "", "faits": "Des requérants recherchent la responsabilité de l'État à raison de dommages imputés à l'action de ses services, ce qui pose la question de l'ordre de juridiction compétent pour en connaître.", "enjeu": "Le contentieux de la responsabilité de l'État du fait de ses services relève-t-il du juge judiciaire ou de la juridiction administrative, et selon quels fondements ?", "solution": "Le Tribunal des conflits affirme, en mettant en évidence la spécificité des structures et de l'action administratives, la compétence de la juridiction administrative pour connaître de la responsabilité de l'État, et fait référence à la nécessité de concilier les textes avec les principes généraux du droit.", "perspective": "L'arrêt, présenté comme le jumeau de Blanco, marque une étape fondatrice dans l'autonomie du droit administratif et de son juge, et constitue la première mention explicite des principes généraux du droit, amorçant leur développement ultérieur dans la jurisprudence."}, {"recto": "TC, 1873, Pelletier", "verso": "La faute de service, qui se rattache à l'exécution du service public sans révéler un comportement personnel de l'agent, relève de la compétence administrative ; seule la faute personnelle détachable engage la responsabilité propre de l'agent devant le juge judiciaire.", "themes": ["Responsabilité des agents publics"], "notions": ["Service public (agent du...)", "Police générale"], "importance": "⭐⭐⭐⭐", "importance_level": 4, "objet": "Distinction entre faute personnelle et faute de service ; compétence juridictionnelle en matière de responsabilité des agents publics.", "portee": "La faute de service, qui se rattache à l'exécution du service public et ne révèle pas un comportement personnel de l'agent, relève de la compétence administrative ; seule la faute personnelle, détachable du service, engage la responsabilité propre de l'agent devant le juge judiciaire.", "considerant": "« en dehors de cet acte il n'impute aux défendeurs aucun fait personnel de nature à engager leur responsabilité particulière »", "faits": "Pendant l'état de siège, le général commandant la première division militaire et le préfet de l'Oise ordonnent la saisie du journal que le sieur Pelletier se propose de publier, en application de la loi du 9 août 1849. Pelletier assigne ces autorités et le commissaire de police devant le tribunal de Senlis afin d'obtenir la restitution des exemplaires saisis et des dommages-intérêts de 2 000 francs. Le préfet élève le conflit.", "enjeu": "Le décret du 19 septembre 1870 ayant abrogé l'article 75 de la Constitution de l'an VIII, le juge judiciaire peut-il connaître d'une action en responsabilité dirigée contre des agents publics à raison d'une mesure de police administrative prise dans l'exercice de leurs fonctions, ou cette action met-elle en cause un acte administratif insusceptible d'appréciation par ce juge ?", "solution": "Le Tribunal des conflits distingue l'acte administratif, dont l'appréciation relève de la juridiction administrative en vertu de la séparation des pouvoirs, et le fait personnel de l'agent, qui engage sa responsabilité propre devant le juge judiciaire. La saisie du journal constitue une mesure préventive de haute police administrative prise par le général dans l'exercice des pouvoirs exceptionnels que lui confère la loi sur l'état de siège ; la demande se fonde exclusivement sur cet acte et n'impute aux défendeurs aucun fait personnel de nature à engager leur responsabilité particulière. Le tribunal judiciaire est incompétent.", "perspective": "L'arrêt fonde la distinction structurante entre faute de service, qui engage la seule responsabilité de l'administration, et faute personnelle, détachable du service, qui engage la responsabilité propre de l'agent. Laferrière précise ultérieurement que la faute de service révèle un administrateur sujet à erreur, tandis que la faute personnelle révèle l'homme avec ses faiblesses, passions et imprudences. Cette distinction commande le régime du cumul de responsabilités (CE, 1918, Époux Lemonnier) et s'articule avec la qualification pénale (TC, 1935, Thépaz : une infraction pénale n'est pas nécessairement une faute personnelle)."}, {"recto": "CE, 1874, Lezeret de la Maurinie", "verso": "Le refus d'une autorité supérieure d'exercer son pouvoir hiérarchique constitue une incompétence négative annulable pour excès de pouvoir : le pouvoir hiérarchique existe même sans texte l'instituant.", "themes": ["État / déconcentration"], "notions": ["Compétence", "Pouvoir hiérarchique"], "importance": "⭐⭐", "importance_level": 2, "objet": "Incompétence négative du supérieur hiérarchique refusant d’exercer son autorité", "portee": "Le refus par une autorité administrative supérieure d’exercer un pouvoir de contrôle ou d’intervention sur un acte relevant de sa compétence hiérarchique constitue une incompétence négative susceptible d’annulation pour excès de pouvoir. Cette notion distingue l’incompétence négative de l’incompétence positive et affirme que le pouvoir hiérarchique est un attribut de la fonction administrative, indépendamment de tout texte. L’arrêt préfigure la reconnaissance du contrôle hiérarchique comme garantie de l’unité de l’action administrative.", "considerant": "", "faits": "Le grand chancelier de la Légion d'honneur prend une décision à l'égard de M. Lezeret de la Maurinie. Ce dernier saisit le garde des Sceaux, ministre de la justice, autorité supérieure, pour qu’il exerce son pouvoir hiérarchique et réforme la décision. Le ministre refuse d’intervenir, estimant ne pas être compétent. Le refus est déféré au Conseil d’État.", "enjeu": "La question posée est de savoir si une autorité hiérarchiquement supérieure peut légalement refuser d’exercer le pouvoir de contrôle qu’elle détient sur les actes de l’autorité subordonnée, ou si ce pouvoir emporte, dans certains cas, l’obligation de statuer.", "solution": "Le Conseil d’État juge que l’autorité supérieure ne peut décliner sa compétence pour refuser d’exercer l’autorité hiérarchique qui lui appartient sur l’acte de son subordonné. Le refus d’exercer une compétence détenue constitue une illégalité (incompétence négative).", "perspective": "L’arrêt illustre la distinction entre incompétence positive et négative et annonce la solution de principe de CE, 1950, Quéralt sur l’existence du pouvoir hiérarchique de plein droit. Il contribue à la construction du régime du contrôle hiérarchique comme garantie de l’unité de l’action administrative."}, {"recto": "CE, 1875, Prince Napoléon", "verso": "Le mobile politique d'un acte ne suffit plus à le qualifier d'acte de gouvernement insusceptible de recours ; le Conseil d'État exerce désormais son contrôle juridictionnel au fond, abandonnant ce critère.", "themes": ["Compétence de la juridiction administrative"], "notions": ["Acte de gouvernement"], "importance": "⭐⭐⭐⭐", "importance_level": 4, "objet": "Abandon du critère du mobile politique de l'acte de gouvernement.", "portee": "Le mobile politique d'un acte ne suffit plus à le qualifier d'acte de gouvernement insusceptible de recours pour excès de pouvoir ; le Conseil d'État examine au fond la radiation du requérant de l'état-major général de l'armée et rejette sa demande, exerçant ainsi son contrôle juridictionnel.", "considerant": "« dans ces conditions, le prince Napoléon-Joseph Bonaparte n'est pas fondé à se plaindre de ce que son nom a cessé d'être porté sur la liste de l'état-major général de l'armée »", "faits": "Le prince Napoléon-Joseph Bonaparte, nommé général de division par décret du 9 mars 1854 en vertu des pouvoirs conférés à l'Empereur par le sénatus-consulte du 7 novembre 1852, voit son nom cesser de figurer sur la liste de l'état-major général de l'armée publiée dans l'annuaire militaire de 1873, après la chute du Second Empire. Le ministre de la Guerre refuse de rétablir son nom par décision du 17 juin 1873. Le prince conteste cette radiation devant le Conseil d'État, invoquant la garantie du grade que lui confère l'article 1er de la loi du 19 mai 1834.", "enjeu": "Le ministre soutient que la mesure, dictée par des considérations politiques tenant à la personne du requérant et au régime déchu, échappe à tout contrôle contentieux. La question centrale porte sur le critère de l'acte de gouvernement : le seul mobile politique d'une décision administrative suffit-il, comme l'admettait la jurisprudence Laffitte de 1822, à la soustraire au recours pour excès de pouvoir ?", "solution": "Le Conseil d'État abandonne le critère du mobile politique de l'acte de gouvernement et accepte d'examiner la requête au fond. Il juge que la situation créée par le décret du 9 mars 1854, adoptée en vertu de l'article 6 du sénatus-consulte du 7 novembre 1852 qui donnait à l'Empereur pleine autorité sur les membres de sa famille, demeure subordonnée à la volonté impériale et ne constitue pas le grade irrévocable garanti par la loi du 19 mai 1834. Le prince n'est donc pas fondé à se plaindre de la radiation de son nom de la liste de l'état-major général de l'armée. Le contrôle juridictionnel s'exerce effectivement, même si la requête est rejetée au fond.", "perspective": "L'arrêt marque le tournant décisif de la théorie des actes de gouvernement en abandonnant la conception extensive fondée sur le mobile politique issue de CE, 1822, Laffitte. Désormais, la catégorie se réduit à une liste finie d'actes : ceux relatifs aux rapports entre l'exécutif et le Parlement (CE, 1933, Desreumeaux) et ceux touchant à la conduite des relations internationales (CE, 1926, Caraco). Le mobile politique ne constitue plus, à lui seul, une cause d'irrecevabilité du recours pour excès de pouvoir. Cette jurisprudence ouvre la voie à l'extension progressive du contrôle juridictionnel sur l'action administrative, même lorsque celle-ci présente une dimension politique."}, {"recto": "CE, 1875, Pariset", "verso": "L'administration commet un détournement de pouvoir lorsqu'elle utilise une compétence dans un but différent de celui pour lequel elle lui a été conférée.", "themes": ["Actes administratifs unilatéraux"], "notions": ["Détournement de pouvoir"], "importance": "⭐⭐⭐⭐", "importance_level": 4, "objet": "Détournement de pouvoir : usage d'une compétence administrative dans un but étranger à sa finalité légale.", "portee": "L'administration commet un détournement de pouvoir lorsqu'elle utilise une compétence en vue d'un but différent de celui pour lequel cette compétence lui a été conférée ; l'arrêt consacre ce cas d'ouverture du recours pour excès de pouvoir.", "considerant": "« le préfet (...) a ainsi usé des pouvoirs de police qui lui appartenaient (...) pour un objet autre que celui à raison desquels ils lui étaient conférés »", "faits": "Un préfet ordonne la fermeture d'une fabrique d'allumettes exploitée par le sieur Pariset en se fondant sur ses pouvoirs de police relatifs aux établissements dangereux, incommodes ou insalubres. L'instruction établit que la mesure n'a pas été prise dans l'intérêt de la salubrité ou de la sécurité publique, mais en exécution d'instructions du ministère des Finances consécutives à la loi du 2 août 1872, dans l'intérêt d'un service financier de l'État. Le sieur Pariset conteste l'arrêté préfectoral du 10 avril 1874 devant le Conseil d'État.", "enjeu": "L'acte émane d'une autorité compétente, respecte les formes requises et repose sur des faits matériellement exacts. La question posée est celle de savoir si le juge de l'excès de pouvoir peut sanctionner un acte régulier en la forme mais pris en vue d'un but autre que celui assigné par la loi au pouvoir exercé, c'est-à-dire si l'usage d'une compétence de police administrative pour un objectif fiscal constitue un vice justifiant l'annulation.", "solution": "Le Conseil d'État annule l'arrêté préfectoral pour excès de pouvoir. Le préfet a usé des pouvoirs de police qui lui appartenaient « pour un objet autre que celui à raison desquels ils lui étaient conférés » : la compétence de police sur les établissements dangereux ne peut servir à assurer l'exécution d'une législation fiscale. L'arrêt consacre le détournement de pouvoir comme cas d'ouverture du recours pour excès de pouvoir, permettant au juge de contrôler la finalité réelle poursuivie par l'administration au-delà de la seule légalité externe de l'acte.", "perspective": "L'arrêt Pariset constitue, avec CE, 26 novembre 1875, Laumonnier-Carriol (Chambre syndicale des fabricants de wagons), rendu le même jour, l'un des arrêts fondateurs du détournement de pouvoir en droit administratif français. Ce cas d'ouverture, qui suppose la démonstration de l'intention réelle de l'administration, demeure d'application prudente et subsidiaire, le juge lui préférant souvent des moyens de légalité externe plus aisés à établir. Il complète l'édifice des cas d'ouverture du recours pour excès de pouvoir aux côtés de l'incompétence, du vice de forme et de la violation de la loi, et sera transposé par le Conseil constitutionnel dans le contrôle des lois."}, {"recto": "CE, 1876, Ducatel", "verso": "En matière de contributions directes, un paiement n'est libératoire que s'il est effectué entre les mains d'une personne ayant qualité pour le recevoir ; un versement anormal n'est pas opposable à l'administration (limite au fonctionnaire de fait).", "themes": ["Actes administratifs unilatéraux"], "notions": ["Acte administratif unilatéral", "Service public (agent du...)"], "importance": "⭐", "importance_level": 1, "objet": "Limites de la théorie du fonctionnaire de fait : validité d'un paiement en matière de contributions directes.", "portee": "En matière de contributions directes, l'effet libératoire d'un paiement suppose qu'il ait été effectué entre les mains d'une personne ayant qualité pour le recevoir ; un versement accompli dans des circonstances anormales n'est pas opposable à l'administration, ce qui marque une limite à la théorie du fonctionnaire de fait.", "considerant": "", "faits": "Un contribuable invoque, en matière de contributions directes, un paiement qu'il effectue pour se libérer de sa dette fiscale, dans des circonstances de fait anormales ou discutées.", "enjeu": "Un paiement effectué dans des conditions irrégulières produit-il un effet libératoire à l'égard de l'administration fiscale, notamment lorsqu'il n'est pas réalisé entre les mains d'une personne ayant qualité pour le recevoir ?", "solution": "Le Conseil d'État juge que l'effet libératoire d'un paiement suppose qu'il ait été effectué entre les mains d'une personne ayant qualité pour le recevoir et refuse de reconnaître la validité d'un versement accompli dans des circonstances anormales.", "perspective": "L'arrêt illustre une limite à la théorie du fonctionnaire de fait, qui ne s'applique pas lorsque les circonstances du paiement ne permettent pas de créer une apparence légitime, et confirme la nécessité d'une régularité formelle pour l'opposabilité des paiements à l'administration."}];
 const PLAY_RECTO_MS = 3000;
 const PLAY_VERSO_MS = 7000;
 const selected = { theme: new Set(), notion: new Set(), importance: new Set() };
@@ -781,6 +865,11 @@ const cardEl = document.getElementById("card");
 const rectoEl = document.getElementById("recto-text");
 const rectoStars = document.getElementById("recto-stars");
 const versoEl = document.getElementById("verso-text");
+const ficheHover = document.getElementById("fiche-hover");
+const ficheFaits = document.getElementById("fiche-faits");
+const ficheEnjeu = document.getElementById("fiche-enjeu");
+const ficheSolution = document.getElementById("fiche-solution");
+const fichePerspective = document.getElementById("fiche-perspective");
 const detailObjet = document.getElementById("detail-objet");
 const detailPortee = document.getElementById("detail-portee");
 const detailConsiderant = document.getElementById("detail-considerant");
@@ -800,6 +889,33 @@ function setDetail(el, value) {
   const text = (value || "").trim();
   el.textContent = text || "— Non renseigné —";
   el.classList.toggle("is-empty", !text);
+}
+
+function setFicheLine(el, value) {
+  const text = (value || "").trim();
+  el.textContent = text || "—";
+  el.classList.toggle("is-empty", !text);
+  return !!text;
+}
+
+function fillFiche(c) {
+  if (!ficheHover) return;
+  if (!c) {
+    ficheHover.classList.remove("has-content");
+    ficheHover.setAttribute("aria-hidden", "true");
+    setFicheLine(ficheFaits, "");
+    setFicheLine(ficheEnjeu, "");
+    setFicheLine(ficheSolution, "");
+    setFicheLine(fichePerspective, "");
+    return;
+  }
+  const a = setFicheLine(ficheFaits, c.faits);
+  const b = setFicheLine(ficheEnjeu, c.enjeu);
+  const d = setFicheLine(ficheSolution, c.solution);
+  const e = setFicheLine(fichePerspective, c.perspective);
+  const has = a || b || d || e;
+  ficheHover.classList.toggle("has-content", has);
+  ficheHover.setAttribute("aria-hidden", has ? "false" : "true");
 }
 
 function setDetailsOpen(open) {
@@ -932,28 +1048,34 @@ function syncTermsList(order) {
   list.appendChild(frag);
 }
 
-/** 3 cartes au hasard sous le flip : hors du set d'étude, sauf si sélection >= total - 3. */
+/** 3 cartes au hasard sous le flip : hors du set d'étude, sauf si le set couvre presque tout. */
 function pickAsideCards(count = 3) {
-  const filtered = filteredIndexes();
   const total = DATA.length;
-  const selection = filtered.length;
   const studySet = new Set(
     (studyPool && studyPool.length) ? studyPool : (order || [])
   );
+  // Filtre d'accueil (thème/notion/…) : priorité, sinon tout le catalogue
+  const filtered = filteredIndexes();
+  const base = filtered.length ? filtered : DATA.map((_, idx) => idx);
+  // Exception : set d'étude trop large pour exclure (hors set < 3)
+  const relax = studySet.size >= Math.max(0, total - 3);
   let pool;
-  if (selection >= total - 3) {
-    pool = filtered.slice();
+  if (relax) {
+    pool = base.slice();
   } else {
-    pool = filtered.filter(idx => !studySet.has(idx));
+    pool = base.filter(idx => !studySet.has(idx));
+    if (pool.length < count) {
+      pool = DATA.map((_, idx) => idx).filter(idx => !studySet.has(idx));
+    }
     if (pool.length < count) {
       const need = count - pool.length;
       const fromSet = shuffleArray(
-        filtered.filter(idx => studySet.has(idx))
+        base.filter(idx => studySet.has(idx))
       ).slice(0, need);
       pool = pool.concat(fromSet);
     }
   }
-  if (!pool.length && filtered.length) pool = filtered.slice();
+  if (!pool.length) pool = base.slice();
   return shuffleArray(pool).slice(0, Math.min(count, pool.length));
 }
 
@@ -1003,6 +1125,7 @@ function render() {
     rectoEl.textContent = "";
     rectoStars.textContent = "";
     versoEl.textContent = "";
+    fillFiche(null);
     setDetail(detailObjet, "");
     setDetail(detailPortee, "");
     setDetail(detailConsiderant, "");
@@ -1014,12 +1137,14 @@ function render() {
   rectoStars.textContent = starsLabel(c.importance_level);
   versoEl.textContent = c.verso || "— Verso non renseigné —";
   versoEl.classList.toggle("is-empty", !c.verso);
+  fillFiche(c);
   setDetail(detailObjet, c.objet);
   setDetail(detailPortee, c.portee);
   setDetail(detailConsiderant, c.considerant);
   counterEl.textContent = (i + 1) + " / " + order.length;
   progressEl.style.width = ((i + 1) / order.length * 100) + "%";
   cardEl.classList.toggle("is-flipped", flipped);
+  updateFichePeek();
   prevBtn.disabled = order.length < 2;
   nextBtn.disabled = order.length < 2;
 }
@@ -1117,6 +1242,8 @@ function leaveGame() {
   stopPlay();
   inGame = false;
   studyPool = null;
+  pointerOverStage = false;
+  stageWrap.classList.remove("is-fiche-peek");
   setDetailsOpen(false);
   game.hidden = true;
   home.hidden = false;
@@ -1189,6 +1316,45 @@ document.querySelectorAll("[data-clear]").forEach(btn => {
     });
     updateHomeCount();
   });
+});
+
+if (ficheHover) {
+  ["copy", "cut", "contextmenu", "selectstart", "dragstart"].forEach((ev) => {
+    ficheHover.addEventListener(ev, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+  });
+  // Clic sur la fiche : ne retourne pas la carte (lecture)
+  ficheHover.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  });
+  ficheHover.addEventListener("mousedown", (e) => e.stopPropagation());
+}
+
+/* Survol fiche hors du rotateY (overlay sur .stage) */
+let pointerOverStage = false;
+function updateFichePeek() {
+  const ok = pointerOverStage
+    && flipped
+    && ficheHover
+    && ficheHover.classList.contains("has-content");
+  stageWrap.classList.toggle("is-fiche-peek", !!ok);
+}
+stageWrap.addEventListener("pointerenter", (e) => {
+  if (e.pointerType && e.pointerType !== "mouse") return;
+  pointerOverStage = true;
+  updateFichePeek();
+});
+stageWrap.addEventListener("pointerleave", () => {
+  pointerOverStage = false;
+  updateFichePeek();
+});
+stageWrap.addEventListener("pointermove", (e) => {
+  if (e.pointerType && e.pointerType !== "mouse") return;
+  if (!pointerOverStage) pointerOverStage = true;
+  updateFichePeek();
 });
 
 btnStart.addEventListener("click", () => enterGame());
