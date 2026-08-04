@@ -1121,6 +1121,8 @@ function cascadeTagSets(opts) {
 function updateChipAvailability() {
   const present = tagsPresentInData();
   const themeExclusive = selected.theme.size > 0;
+  const hasImportance = selected.importance.size > 0;
+  const hasNotions = selected.notion.size > 0;
 
   document.querySelectorAll('.chip[data-group="theme"]').forEach(btn => {
     const value = btn.dataset.value;
@@ -1133,11 +1135,21 @@ function updateChipAvailability() {
     btn.setAttribute("aria-disabled", ok ? "false" : "true");
   });
 
-  // Notions réduites par thème (+ importance si choisie) ; cumul multi-notions
-  const notionScope = cascadeTagSets({ ignoreNotion: true });
+  // Notions : réduites par le thème ; si importance choisie sans notions,
+  // réduites aussi par les ★. Dès que des notions + une importance sont
+  // actives, on verrouille : pas de nouvelles notions (évite les co-tags
+  // multi-notions qui réouvrent des décisions hors cadre).
+  let notionOk;
+  if (hasImportance && hasNotions) {
+    notionOk = new Set(selectedList("notion"));
+  } else if (hasImportance) {
+    notionOk = cascadeTagSets({ ignoreNotion: true }).notions;
+  } else {
+    notionOk = cascadeTagSets({ ignoreNotion: true, ignoreImportance: true }).notions;
+  }
   document.querySelectorAll('.chip[data-group="notion"]').forEach(btn => {
     const value = btn.dataset.value;
-    const ok = notionScope.notions.has(value);
+    const ok = notionOk.has(value);
     if (selected.notion.has(value) && !ok) {
       selected.notion.delete(value);
       btn.setAttribute("aria-pressed", "false");
@@ -1148,7 +1160,7 @@ function updateChipAvailability() {
     btn.setAttribute("aria-disabled", ok ? "false" : "true");
   });
 
-  // Étoiles réduites par thème + notions ; cumul multi-★
+  // Étoiles : réduites par thème + notions ; cumul multi-★
   const starScope = cascadeTagSets({ ignoreImportance: true });
   document.querySelectorAll('.chip[data-group="importance"]').forEach(btn => {
     const value = btn.dataset.value;
