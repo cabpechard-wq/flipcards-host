@@ -84,4 +84,17 @@
   }
 
   refreshAuth();
+
+  const footer = document.createElement("footer");
+  footer.className = "site-footer";
+  footer.innerHTML =
+    '<div class="site-footer-inner">' +
+      '<p class="site-footer-brand">CABINET PECHARD — Grands arrêts du droit public et administratif</p>' +
+      '<nav class="site-footer-links" aria-label="Informations légales">' +
+        '<a href="' + abs("mentions-legales/") + '">Mentions légales</a>' +
+        '<a href="' + abs("cgv/") + '">CGV</a>' +
+        '<a href="mailto:cab.pechard@gmail.com">Contact</a>' +
+      "</nav>" +
+    "</div>";
+  document.body.appendChild(footer);
 })();
