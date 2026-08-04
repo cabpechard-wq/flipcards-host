@@ -41,22 +41,22 @@ a.btn.secondary { background:#fff; color:var(--accent); border:1px solid var(--a
       <a class="btn" id="btn-yearly" href="#configure">Choisir annuel</a>
     </div>
   </div>
-  <p class="note">Paiement sécurisé Lemon Squeezy (TVA UE incluse selon ton pays). Après paiement → espace membre → flipcards.</p>
+  <p class="note">Paiement securise Stripe (via Lemon Squeezy si connecte). Apres paiement → espace membre → flipcards.</p>
   <p><a class="btn secondary" href="../demo/">Essayer la démo (8 cartes)</a></p>
 </main>
 <script>
 // Rempli au build / deploy depuis commerce/config.json
 window.FLIPCARDS_CHECKOUT = {
-  monthly: "",
-  yearly: ""
+  monthly: "https://buy.stripe.com/6oUaEWgWQgc21PO8QPawo01",
+  yearly: "https://buy.stripe.com/14AdR88qk3pgeCA0kjawo00"
 };
 (function(){
   const m = document.getElementById('btn-monthly');
   const y = document.getElementById('btn-yearly');
   if (window.FLIPCARDS_CHECKOUT.monthly) m.href = window.FLIPCARDS_CHECKOUT.monthly;
-  else m.addEventListener('click', e => { e.preventDefault(); alert('Checkout Lemon Squeezy à configurer (LEMON_SQUEEZY_API_KEY + setup_lemonsqueezy.py).'); });
+  else m.addEventListener('click', e => { e.preventDefault(); alert('Checkout a configurer : Payment Links Stripe ou LEMON_SQUEEZY_API_KEY.'); });
   if (window.FLIPCARDS_CHECKOUT.yearly) y.href = window.FLIPCARDS_CHECKOUT.yearly;
-  else y.addEventListener('click', e => { e.preventDefault(); alert('Checkout Lemon Squeezy à configurer (LEMON_SQUEEZY_API_KEY + setup_lemonsqueezy.py).'); });
+  else y.addEventListener('click', e => { e.preventDefault(); alert('Checkout a configurer : Payment Links Stripe ou LEMON_SQUEEZY_API_KEY.'); });
 })();
 </script>
 </body>
