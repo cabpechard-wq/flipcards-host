@@ -99,6 +99,12 @@ body { padding: 0 0 3.5rem; background: #ffffff; }
 .classifier-title {
   margin: 0; font-size: 1rem; font-weight: 700; color: var(--ink);
 }
+.classifier-hint {
+  font-size: .72rem;
+  font-weight: 500;
+  color: #4b5563;
+  letter-spacing: 0;
+}
 .classifier-chevron {
   width: 1rem; height: 1rem; color: var(--ink); flex: 0 0 auto;
   transition: transform .35s cubic-bezier(.2,.8,.2,1);
@@ -636,7 +642,7 @@ body { padding: 0 0 3.5rem; background: #ffffff; }
         <div class="classifier-row">
           <button type="button" class="classifier-toggle" aria-expanded="false" aria-controls="chips-theme">
             <svg class="classifier-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-            <span class="classifier-title">Thèmes</span>
+            <span class="classifier-title">Thèmes <span class="classifier-hint">(1 seul choix)</span></span>
           </button>
           <button type="button" class="classifier-clear" data-clear="theme">Effacer la sélection</button>
         </div>
@@ -671,7 +677,7 @@ body { padding: 0 0 3.5rem; background: #ffffff; }
         <div class="classifier-row">
           <button type="button" class="classifier-toggle" aria-expanded="false" aria-controls="chips-notion">
             <svg class="classifier-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-            <span class="classifier-title">Notions</span>
+            <span class="classifier-title">Notions <span class="classifier-hint">(filtre par sélection multiple)</span></span>
           </button>
           <button type="button" class="classifier-clear" data-clear="notion">Effacer la sélection</button>
         </div>
@@ -4924,14 +4930,18 @@ function selectedList(group) {
   return [...selected[group]];
 }
 
-function matchesFilters(card) {
+function matchesFiltersExcept(card, exceptGroup) {
   const themes = selectedList("theme");
   const notions = selectedList("notion");
   const levels = selectedList("importance").map(Number);
-  if (themes.length && !(card.themes || []).some(t => themes.includes(t))) return false;
-  if (notions.length && !(card.notions || []).some(n => notions.includes(n))) return false;
-  if (levels.length && !levels.includes(Number(card.importance_level) || 0)) return false;
+  if (exceptGroup !== "theme" && themes.length && !(card.themes || []).some(t => themes.includes(t))) return false;
+  if (exceptGroup !== "notion" && notions.length && !(card.notions || []).some(n => notions.includes(n))) return false;
+  if (exceptGroup !== "importance" && levels.length && !levels.includes(Number(card.importance_level) || 0)) return false;
   return true;
+}
+
+function matchesFilters(card) {
+  return matchesFiltersExcept(card, null);
 }
 
 function filteredIndexes() {
@@ -4972,12 +4982,12 @@ function tagsPresentInData() {
   return { themes, notions, importance };
 }
 
-function compatibleTagSets() {
+function compatibleTagSetsExcept(exceptGroup) {
   const themes = new Set();
   const notions = new Set();
   const importance = new Set();
-  for (const idx of filteredIndexes()) {
-    const card = DATA[idx];
+  for (const card of DATA) {
+    if (!matchesFiltersExcept(card, exceptGroup)) continue;
     (card.themes || []).forEach(t => themes.add(t));
     (card.notions || []).forEach(n => notions.add(n));
     const lvl = Number(card.importance_level) || 0;
@@ -4988,7 +4998,6 @@ function compatibleTagSets() {
 
 function updateChipAvailability() {
   const present = tagsPresentInData();
-  const compatible = compatibleTagSets();
   const anyFilter = selected.theme.size > 0 || selected.notion.size > 0 || selected.importance.size > 0;
   document.querySelectorAll(".chip").forEach(btn => {
     const group = btn.dataset.group;
@@ -4998,7 +5007,10 @@ function updateChipAvailability() {
     if (group === "theme") ok = present.themes.has(value);
     else if (group === "notion") ok = present.notions.has(value);
     else if (group === "importance") ok = present.importance.has(value);
+    // Pour chaque groupe, ignorer ce groupe dans la compatibilité
+    // (sinon Importance ne peut plus cumuler ★ + ★★ + …)
     if (ok && anyFilter && !isSelected) {
+      const compatible = compatibleTagSetsExcept(group);
       if (group === "theme") ok = compatible.themes.has(value);
       else if (group === "notion") ok = compatible.notions.has(value);
       else if (group === "importance") ok = compatible.importance.has(value);
@@ -5257,9 +5269,24 @@ document.querySelectorAll(".chip").forEach(btn => {
     if (btn.disabled || btn.classList.contains("is-disabled")) return;
     const group = btn.dataset.group;
     const value = btn.dataset.value;
-    if (selected[group].has(value)) selected[group].delete(value);
-    else selected[group].add(value);
-    btn.setAttribute("aria-pressed", selected[group].has(value) ? "true" : "false");
+    if (group === "theme") {
+      // Un seul thème à la fois
+      if (selected.theme.has(value)) {
+        selected.theme.delete(value);
+      } else {
+        selected.theme.clear();
+        selected.theme.add(value);
+      }
+      document.querySelectorAll('.chip[data-group="theme"]').forEach(c => {
+        c.setAttribute("aria-pressed", selected.theme.has(c.dataset.value) ? "true" : "false");
+      });
+    } else if (selected[group].has(value)) {
+      selected[group].delete(value);
+      btn.setAttribute("aria-pressed", "false");
+    } else {
+      selected[group].add(value);
+      btn.setAttribute("aria-pressed", "true");
+    }
     updateHomeCount();
   });
 });
