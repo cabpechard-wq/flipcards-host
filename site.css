@@ -369,6 +369,16 @@ a:hover { color: var(--accent-hover); }
 
 .btn:hover { background: var(--accent-hover); color: #fff; }
 
+.btn.fill-secondary {
+  background: var(--secondary);
+  color: #fff;
+}
+
+.btn.fill-secondary:hover {
+  background: #a85824;
+  color: #fff;
+}
+
 .btn.secondary {
   background: #fff;
   color: var(--secondary);
@@ -378,6 +388,18 @@ a:hover { color: var(--accent-hover); }
 .btn.secondary:hover {
   background: var(--secondary-soft);
   color: var(--secondary);
+}
+
+.btn.outline-accent {
+  background: #fff;
+  color: var(--accent-hover);
+  border: 1px solid var(--accent);
+  font-weight: 700;
+}
+
+.btn.outline-accent:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 .btn.block { width: 100%; }
