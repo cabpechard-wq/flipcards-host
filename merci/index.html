@@ -18,28 +18,32 @@ a.btn { display:inline-block; margin:.4rem .4rem .4rem 0; background:var(--accen
   font-family:system-ui,sans-serif; font-weight:600; padding:.7rem 1rem; border-radius:8px; }
 a.btn.secondary { background:#fff; color:var(--accent); border:1px solid var(--accent); }
 .callout { background:#ecfdf5; border:1px solid #a7f3d0; border-radius:8px; padding:.9rem 1rem; margin:1rem 0; }
+.warn { background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:.9rem 1rem; margin:1rem 0; }
 </style>
 </head>
 <body>
   <main class="box">
     <h1>Paiement reçu</h1>
-    <p>Merci — ton abonnement Flipcards (grands arrêts du droit public et administratif) est actif.</p>
+    <p>Merci — ton abonnement Flipcards (grands arrêts du droit public et administratif) est enregistré côté Stripe.</p>
     <div class="callout">
-      <p style="margin:0;color:var(--ink)"><strong>Accès</strong></p>
-      <p style="margin:.4rem 0 0">Connecte-toi avec l’<strong>e-mail utilisé chez Stripe</strong> et le mot de passe reçu après enregistrement de ton compte.</p>
+      <p style="margin:0;color:var(--ink)"><strong>Accès flipcards</strong></p>
+      <p style="margin:.4rem 0 0">Connecte-toi sur l’espace abonné avec l’e-mail utilisé chez Stripe et ton mot de passe d’accès.</p>
+    </div>
+    <div class="warn">
+      <p style="margin:0;color:var(--ink);font-family:system-ui,sans-serif;font-size:.92rem">
+        <strong>Pas d’e-mail automatique de mot de passe</strong> pour l’instant (hébergement GitHub Pages).
+        Les identifiants sont créés manuellement après paiement, puis communiqués hors site.
+        Le reçu / facture Stripe, lui, part depuis le Dashboard Stripe (réglage « Customer emails ») — indépendant de cette page.
+      </p>
     </div>
     <ol>
-      <li>Ouvre l’espace membre (lien ci-dessous).</li>
-      <li>Entre ton e-mail Stripe + ton mot de passe.</li>
-      <li>Tu arrives directement sur les flipcards.</li>
+      <li>Attends la confirmation de ton mot de passe (ou utilise celui déjà reçu).</li>
+      <li>Ouvre l’espace abonné → e-mail Stripe + mot de passe.</li>
+      <li>Tu arrives sur les flipcards.</li>
     </ol>
     <p>
       <a class="btn" href="../membre/">Se connecter</a>
-      <a class="btn secondary" href="../checkout/">Voir les formules</a>
-    </p>
-    <p style="font-size:.85rem;margin-top:1.2rem">
-      Conserve l’e-mail Stripe. Si tu n’as pas encore de mot de passe, contacte le support après paiement
-      (compte créé manuellement côté admin).
+      <a class="btn secondary" href="../">Accueil</a>
     </p>
   </main>
 <script>
