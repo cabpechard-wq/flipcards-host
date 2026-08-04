@@ -495,6 +495,40 @@ input:focus {
   text-underline-offset: 3px;
 }
 
+.checkout-consent {
+  display: flex;
+  gap: .75rem;
+  align-items: flex-start;
+  margin: 1.35rem 0 .65rem;
+  padding: .95rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #fff;
+  font-size: .86rem;
+  line-height: 1.55;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.checkout-consent input {
+  margin-top: .2rem;
+  width: 1.05rem;
+  height: 1.05rem;
+  flex: 0 0 auto;
+  accent-color: var(--accent);
+}
+
+.checkout-consent a {
+  font-weight: 650;
+}
+
+.btn.is-disabled,
+.btn[aria-disabled="true"] {
+  opacity: .38;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
 /* —— Pages légales —— */
 .legal-page {
   max-width: 44rem;

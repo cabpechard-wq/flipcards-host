@@ -27,22 +27,33 @@
       <h2>Mensuel</h2>
       <div class="site-price">6,90 €<span> / mois</span></div>
       <p>Accès complet + mises à jour pendant l’abonnement.</p>
-      <a class="btn" id="btn-monthly" href="#configure">Choisir mensuel</a>
+      <a class="btn" id="btn-monthly" href="#configure" aria-disabled="true">Choisir mensuel</a>
     </div>
     <div class="site-card">
       <h2>Annuel</h2>
       <div class="site-price">59 €<span> / an</span></div>
       <p>≈ 2 mois offerts. Idéal pour l’année universitaire.</p>
-      <a class="btn" id="btn-yearly" href="#configure">Choisir annuel</a>
+      <a class="btn" id="btn-yearly" href="#configure" aria-disabled="true">Choisir annuel</a>
     </div>
     <div class="site-card test">
       <h2>Test</h2>
       <div class="site-price">Test<span> / abo</span></div>
       <p>Lien Stripe de test (parcours paiement → page merci).</p>
-      <a class="btn secondary" id="btn-test" href="#configure">Payer (test)</a>
+      <a class="btn secondary" id="btn-test" href="#configure" aria-disabled="true">Payer (test)</a>
     </div>
   </div>
-  <p class="site-note">Paiement sécurisé Stripe. En passant commande, vous acceptez les <a href="../cgv/">conditions générales de vente</a>.</p>
+
+  <label class="checkout-consent" for="cgv-consent">
+    <input type="checkbox" id="cgv-consent" name="cgv_consent" required>
+    <span>
+      Je demande l’exécution immédiate du contenu numérique et j’accepte les
+      <a href="../cgv/" target="_blank" rel="noopener">conditions générales de vente</a>
+      et les
+      <a href="../mentions-legales/" target="_blank" rel="noopener">mentions légales</a>,
+      en renonçant expressément à mon droit de rétractation une fois l’accès délivré.
+    </span>
+  </label>
+  <p class="site-note" id="cgv-hint">Cochez la case pour activer le paiement. Une confirmation équivalente sera aussi demandée sur Stripe.</p>
   <p class="site-foot"><a class="btn secondary" href="../demo/">Essayer la démo (8 cartes)</a></p>
 </main>
 <script>
@@ -56,13 +67,38 @@ window.FLIPCARDS_CHECKOUT = {
     try { return window.self !== window.top; } catch (_) { return true; }
   })();
 
+  const consent = document.getElementById("cgv-consent");
+  const buttons = [
+    document.getElementById("btn-monthly"),
+    document.getElementById("btn-yearly"),
+    document.getElementById("btn-test"),
+  ].filter(Boolean);
+
+  function setEnabled(ok) {
+    buttons.forEach((btn) => {
+      btn.classList.toggle("is-disabled", !ok);
+      btn.setAttribute("aria-disabled", ok ? "false" : "true");
+      if (!ok) {
+        btn.setAttribute("tabindex", "-1");
+      } else {
+        btn.removeAttribute("tabindex");
+      }
+    });
+  }
+
   function wire(btn, url) {
     if (!btn) return;
     if (url) {
+      btn.dataset.checkoutUrl = url;
       btn.href = url;
       btn.target = "_blank";
       btn.rel = "noopener noreferrer";
       btn.addEventListener("click", (e) => {
+        if (!consent.checked) {
+          e.preventDefault();
+          consent.focus();
+          return;
+        }
         if (inIframe) {
           e.preventDefault();
           window.open(url, "_blank", "noopener,noreferrer");
@@ -80,6 +116,9 @@ window.FLIPCARDS_CHECKOUT = {
   wire(document.getElementById("btn-monthly"), cfg.monthly);
   wire(document.getElementById("btn-yearly"), cfg.yearly);
   wire(document.getElementById("btn-test"), cfg.test);
+
+  consent.addEventListener("change", () => setEnabled(consent.checked));
+  setEnabled(false);
 
   if (inIframe) {
     const note = document.createElement("p");
