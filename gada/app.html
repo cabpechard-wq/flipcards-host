@@ -424,6 +424,14 @@ body { padding: 1.5rem 1rem 3.5rem; background: #ffffff; }
   overflow: hidden; clip: rect(0,0,0,0); border: 0;
 }
 .terms { margin-top: 2.75rem; width: 100%; }
+.terms-title {
+  margin: 0 0 .85rem;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 650;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
 .term-row {
   list-style: none; display: grid; grid-template-columns: 1fr 1.35fr; gap: 1rem;
   background: #fff;
@@ -728,7 +736,8 @@ body { padding: 1.5rem 1rem 3.5rem; background: #ffffff; }
         </aside>
       </div>
     </section>
-    <section class="terms" aria-label="Liste des cartes">
+    <section class="terms" aria-label="3 cartes au hasard">
+      <h2 class="terms-title" id="terms-title">3 au hasard…</h2>
       <ul style="margin:0;padding:0" id="terms-list">
 <li class="term-row" data-idx="0" data-themes="Compétence de la juridiction administrative" data-notions="Acte de gouvernement">
   <div class="term-recto">CE, 1822, Laffitte<div class="tags"><span class="tag tag-theme" data-color="purple">Compétence de la juridiction administrative</span></div><div class="tags"><span class="tag tag-notion" data-color="blue">Acte de gouvernement</span></div></div>
@@ -4730,6 +4739,19 @@ function updateHomeCount() {
   updateChipAvailability();
 }
 
+function tagsPresentInData() {
+  const themes = new Set();
+  const notions = new Set();
+  const importance = new Set();
+  for (const card of DATA) {
+    (card.themes || []).forEach(t => themes.add(t));
+    (card.notions || []).forEach(n => notions.add(n));
+    const lvl = Number(card.importance_level) || 0;
+    if (lvl) importance.add(String(lvl));
+  }
+  return { themes, notions, importance };
+}
+
 function compatibleTagSets() {
   const themes = new Set();
   const notions = new Set();
@@ -4745,17 +4767,21 @@ function compatibleTagSets() {
 }
 
 function updateChipAvailability() {
-  const { themes, notions, importance } = compatibleTagSets();
+  const present = tagsPresentInData();
+  const compatible = compatibleTagSets();
   const anyFilter = selected.theme.size > 0 || selected.notion.size > 0 || selected.importance.size > 0;
   document.querySelectorAll(".chip").forEach(btn => {
     const group = btn.dataset.group;
     const value = btn.dataset.value;
     const isSelected = selected[group].has(value);
     let ok = true;
-    if (anyFilter && !isSelected) {
-      if (group === "theme") ok = themes.has(value);
-      else if (group === "notion") ok = notions.has(value);
-      else if (group === "importance") ok = importance.has(value);
+    if (group === "theme") ok = present.themes.has(value);
+    else if (group === "notion") ok = present.notions.has(value);
+    else if (group === "importance") ok = present.importance.has(value);
+    if (ok && anyFilter && !isSelected) {
+      if (group === "theme") ok = compatible.themes.has(value);
+      else if (group === "notion") ok = compatible.notions.has(value);
+      else if (group === "importance") ok = compatible.importance.has(value);
     }
     btn.classList.toggle("is-disabled", !ok);
     btn.disabled = !ok;
@@ -4798,13 +4824,50 @@ function syncTermsList(order) {
   list.appendChild(frag);
 }
 
+/** 3 cartes au hasard sous le flip : hors du set d'étude, sauf si sélection >= total - 3. */
+function pickAsideCards(count = 3) {
+  const filtered = filteredIndexes();
+  const total = DATA.length;
+  const selection = filtered.length;
+  const studySet = new Set(
+    (studyPool && studyPool.length) ? studyPool : (order || [])
+  );
+  let pool;
+  if (selection >= total - 3) {
+    pool = filtered.slice();
+  } else {
+    pool = filtered.filter(idx => !studySet.has(idx));
+    if (pool.length < count) {
+      const need = count - pool.length;
+      const fromSet = shuffleArray(
+        filtered.filter(idx => studySet.has(idx))
+      ).slice(0, need);
+      pool = pool.concat(fromSet);
+    }
+  }
+  if (!pool.length && filtered.length) pool = filtered.slice();
+  return shuffleArray(pool).slice(0, Math.min(count, pool.length));
+}
+
+function refreshAsideList() {
+  const picks = pickAsideCards(3);
+  syncTermsList(picks);
+  const title = document.getElementById("terms-title");
+  const section = title && title.closest(".terms");
+  if (title) {
+    title.textContent = picks.length
+      ? (picks.length === 3 ? "3 au hasard…" : picks.length + " au hasard…")
+      : "3 au hasard…";
+  }
+  if (section) section.hidden = picks.length === 0;
+}
+
 function rebuildOrder() {
   order = studyPool ? [...studyPool] : filteredIndexes();
   if (shuffled) order = shuffleArray(order);
   i = 0;
   flipped = false;
-  // Liste décorrélée du lot d'étude : toutes les fiches filtrées, ordre au hasard indépendant
-  syncTermsList(shuffleArray(filteredIndexes()));
+  refreshAsideList();
   const visible = order.length;
   const empty = visible === 0;
   emptyFilter.classList.toggle("show", empty);
