@@ -112,6 +112,14 @@ body { padding: 0 0 3.5rem; background: #ffffff; }
   opacity: .28; cursor: not-allowed; pointer-events: none;
   background: #fff; color: #6b7280;
 }
+.chip.is-exclusive-dim:not([aria-pressed="true"]) {
+  opacity: .28;
+  background: #fff;
+  color: #6b7280;
+}
+.chip.is-exclusive-dim:hover:not(:disabled):not(.is-disabled) {
+  opacity: .55;
+}
 .chip-importance {
   letter-spacing: .06em;
   color: var(--brass);
@@ -163,7 +171,7 @@ body { padding: 0 0 3.5rem; background: #ffffff; }
   border-color: var(--chip-border);
   color: #6b7280;
 }
-.chip[data-color]:hover:not(:disabled):not(.is-disabled):not([aria-pressed="true"]) {
+.chip[data-color]:hover:not(:disabled):not(.is-disabled):not(.is-exclusive-dim):not([aria-pressed="true"]) {
   background: #fff;
   border-color: var(--chip-vivid);
   color: var(--chip-vivid);
@@ -175,7 +183,8 @@ body { padding: 0 0 3.5rem; background: #ffffff; }
   color: #fff;
 }
 .chip[data-color].is-disabled,
-.chip[data-color]:disabled {
+.chip[data-color]:disabled,
+.chip[data-color].is-exclusive-dim:not([aria-pressed="true"]) {
   background: #fff;
   border-color: var(--chip-border);
   color: #6b7280;
@@ -1107,6 +1116,7 @@ function compatibleTagSetsExcept(exceptGroup) {
 function updateChipAvailability() {
   const present = tagsPresentInData();
   const anyFilter = selected.theme.size > 0 || selected.notion.size > 0 || selected.importance.size > 0;
+  const themeExclusive = selected.theme.size > 0;
   document.querySelectorAll(".chip").forEach(btn => {
     const group = btn.dataset.group;
     const value = btn.dataset.value;
@@ -1123,7 +1133,10 @@ function updateChipAvailability() {
       else if (group === "notion") ok = compatible.notions.has(value);
       else if (group === "importance") ok = compatible.importance.has(value);
     }
+    // Thème = 1 seul choix : ombrer les autres capsules (cliquables pour changer)
+    const exclusiveDim = group === "theme" && themeExclusive && !isSelected && ok;
     btn.classList.toggle("is-disabled", !ok);
+    btn.classList.toggle("is-exclusive-dim", exclusiveDim);
     btn.disabled = !ok;
     btn.setAttribute("aria-disabled", ok ? "false" : "true");
   });
