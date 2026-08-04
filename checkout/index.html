@@ -41,7 +41,7 @@ a.btn.secondary { background:#fff; color:var(--accent); border:1px solid var(--a
       <a class="btn" id="btn-yearly" href="#configure">Choisir annuel</a>
     </div>
   </div>
-  <p class="note">Paiement securise Stripe (via Lemon Squeezy si connecte). Apres paiement → espace membre → flipcards.</p>
+  <p class="note">Paiement securise Stripe. Le paiement s’ouvre hors de Notion (nouvel onglet) — requis pour 3D Secure.</p>
   <p><a class="btn secondary" href="../demo/">Essayer la démo (8 cartes)</a></p>
 </main>
 <script>
@@ -50,13 +50,70 @@ window.FLIPCARDS_CHECKOUT = {
   monthly: "https://buy.stripe.com/6oUaEWgWQgc21PO8QPawo01",
   yearly: "https://buy.stripe.com/14AdR88qk3pgeCA0kjawo00"
 };
-(function(){
-  const m = document.getElementById('btn-monthly');
-  const y = document.getElementById('btn-yearly');
-  if (window.FLIPCARDS_CHECKOUT.monthly) m.href = window.FLIPCARDS_CHECKOUT.monthly;
-  else m.addEventListener('click', e => { e.preventDefault(); alert('Checkout a configurer : Payment Links Stripe ou LEMON_SQUEEZY_API_KEY.'); });
-  if (window.FLIPCARDS_CHECKOUT.yearly) y.href = window.FLIPCARDS_CHECKOUT.yearly;
-  else y.addEventListener('click', e => { e.preventDefault(); alert('Checkout a configurer : Payment Links Stripe ou LEMON_SQUEEZY_API_KEY.'); });
+(function () {
+  const inIframe = (() => {
+    try { return window.self !== window.top; } catch (_) { return true; }
+  })();
+
+  function openCheckout(url) {
+    if (!url) return;
+    // Stripe Checkout / 3DS ne fonctionne pas dans une iframe Notion.
+    if (inIframe) {
+      window.open(url, "_blank", "noopener,noreferrer");
+      return;
+    }
+    location.href = url;
+  }
+
+  const m = document.getElementById("btn-monthly");
+  const y = document.getElementById("btn-yearly");
+  const monthly = window.FLIPCARDS_CHECKOUT.monthly;
+  const yearly = window.FLIPCARDS_CHECKOUT.yearly;
+
+  if (monthly) {
+    m.href = monthly;
+    m.target = "_blank";
+    m.rel = "noopener noreferrer";
+    m.addEventListener("click", (e) => {
+      if (inIframe) {
+        e.preventDefault();
+        openCheckout(monthly);
+      }
+    });
+  } else {
+    m.addEventListener("click", (e) => {
+      e.preventDefault();
+      alert("Checkout a configurer : Payment Links Stripe.");
+    });
+  }
+
+  if (yearly) {
+    y.href = yearly;
+    y.target = "_blank";
+    y.rel = "noopener noreferrer";
+    y.addEventListener("click", (e) => {
+      if (inIframe) {
+        e.preventDefault();
+        openCheckout(yearly);
+      }
+    });
+  } else {
+    y.addEventListener("click", (e) => {
+      e.preventDefault();
+      alert("Checkout a configurer : Payment Links Stripe.");
+    });
+  }
+
+  // Si toute la page checkout est elle-meme en iframe, proposer une sortie
+  if (inIframe) {
+    const note = document.createElement("p");
+    note.className = "note";
+    note.innerHTML =
+      'Si le paiement ne s’ouvre pas : <a href="' +
+      (monthly || yearly || "#") +
+      '" target="_blank" rel="noopener">ouvrir le checkout en plein ecran</a>.';
+    document.querySelector("main").appendChild(note);
+  }
 })();
 </script>
 </body>
