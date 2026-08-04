@@ -1,6 +1,6 @@
-/* shared auth helpers — inject AUTH_API via https://flipcards-auth.EXAMPLE.workers.dev */
+/* shared auth helpers — inject AUTH_API via https://flipcards-auth.cab-pechard.workers.dev */
 window.FLIPCARDS_AUTH = {
-  api: "https://flipcards-auth.EXAMPLE.workers.dev",
+  api: "https://flipcards-auth.cab-pechard.workers.dev",
   tokenKey: "flipcards_token",
   getToken() {
     return sessionStorage.getItem(this.tokenKey) || localStorage.getItem(this.tokenKey) || "";
