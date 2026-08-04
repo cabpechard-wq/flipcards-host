@@ -221,7 +221,7 @@ body { padding: 1.5rem 1rem 3.5rem; background: #ffffff; }
   padding: .12rem .45rem; border-radius: 999px;
   background: #fff; color: #6b7280;
 }
-.study { display: flex; flex-direction: column; align-items: center; gap: .85rem; }
+.study { display: flex; flex-direction: column; align-items: center; gap: .85rem; overflow: visible; }
 .study-main {
   display: flex;
   flex-direction: column;
@@ -229,10 +229,12 @@ body { padding: 1.5rem 1rem 3.5rem; background: #ffffff; }
   gap: .75rem;
   width: 100%;
   max-width: 36rem;
+  overflow: visible;
 }
 .stage {
   perspective: 1600px;
   width: 100%;
+  overflow: visible;
 }
 .study-details {
   display: none;
@@ -376,30 +378,29 @@ body { padding: 1.5rem 1rem 3.5rem; background: #ffffff; }
 .def.is-empty { color: var(--muted); font-style: italic; text-align: center; }
 .stage {
   position: relative;
+  overflow: visible;
 }
 .fiche-hover {
   position: absolute;
-  left: 50%;
+  left: calc(100% + .85rem);
   top: 50%;
-  transform: translate(-50%, -46%) scale(.98);
+  transform: translateY(-50%) translateX(.4rem);
   z-index: 8;
-  width: min(92%, 24rem);
-  max-height: min(70%, 20rem);
+  width: min(22rem, 42vw);
+  max-height: min(24rem, 70vh);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   display: flex;
   flex-direction: column;
   gap: .55rem;
-  padding: .85rem 1rem;
+  padding: .9rem 1.05rem;
   overflow: auto;
   overscroll-behavior: contain;
   background: #fffef9;
-  border: 1px solid #e7e2d6;
-  border-radius: 12px;
-  box-shadow:
-    0 1px 2px rgba(28, 25, 23, .06),
-    0 14px 32px rgba(28, 25, 23, .16);
+  border: 2px solid #1c1917;
+  border-radius: 1.15rem 1.15rem 1.15rem .35rem;
+  box-shadow: 4px 5px 0 rgba(28, 25, 23, .12);
   box-sizing: border-box;
   text-align: left;
   -webkit-user-select: none;
@@ -408,14 +409,33 @@ body { padding: 1.5rem 1rem 3.5rem; background: #ffffff; }
   cursor: default;
   transition: opacity .15s ease, visibility .15s ease, transform .15s ease;
 }
+/* Pointe BD vers la carte */
+.fiche-hover::before {
+  content: "";
+  position: absolute;
+  right: 100%;
+  top: 1.35rem;
+  width: 0;
+  height: 0;
+  border: 11px solid transparent;
+  border-right-color: #1c1917;
+}
 .fiche-hover::after {
-  content: none;
+  content: "";
+  position: absolute;
+  right: 100%;
+  top: 1.5rem;
+  width: 0;
+  height: 0;
+  border: 8px solid transparent;
+  border-right-color: #fffef9;
+  margin-right: -2px;
 }
 .stage.is-fiche-peek .fiche-hover.has-content {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transform: translate(-50%, -50%) scale(1);
+  transform: translateY(-50%) translateX(0);
 }
 .fiche-hover h4 {
   margin: 0 0 .15rem;
@@ -439,10 +459,38 @@ body { padding: 1.5rem 1rem 3.5rem; background: #ffffff; }
 .fiche-hover p.is-empty { color: var(--muted); font-style: italic; }
 .flip-scene.is-flipped { cursor: help; }
 .stage.is-fiche-peek { cursor: default; }
+@media (max-width: 920px) {
+  .fiche-hover {
+    left: 50%;
+    top: auto;
+    bottom: calc(100% + .75rem);
+    width: min(94%, 22rem);
+    max-height: min(40vh, 16rem);
+    transform: translateX(-50%) translateY(.35rem);
+    border-radius: 1.15rem 1.15rem .35rem 1.15rem;
+  }
+  .stage.is-fiche-peek .fiche-hover.has-content {
+    transform: translateX(-50%) translateY(0);
+  }
+  .fiche-hover::before {
+    right: auto;
+    left: 1.5rem;
+    top: 100%;
+    border: 11px solid transparent;
+    border-top-color: #1c1917;
+  }
+  .fiche-hover::after {
+    right: auto;
+    left: 1.7rem;
+    top: 100%;
+    border: 8px solid transparent;
+    border-top-color: #fffef9;
+    margin-right: 0;
+    margin-top: -2px;
+  }
+}
 @media (max-width: 720px) {
   .fiche-hover {
-    width: min(94%, 20rem);
-    max-height: min(75%, 16rem);
     padding: .75rem .85rem;
   }
 }
