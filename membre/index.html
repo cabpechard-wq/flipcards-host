@@ -40,7 +40,7 @@
   </div>
 </main>
 <script src="../auth.js?v=4"></script>
-<script src="../site-nav.js?v=6"></script>
+<script src="../site-nav.js?v=7"></script>
 <script>
 (async function () {
   const q = new URLSearchParams(location.search);
@@ -48,7 +48,7 @@
 
   const me = await FLIPCARDS_AUTH.requireSession();
   if (me) {
-    location.replace("../gada/app.html");
+    location.replace("../");
     return;
   }
 
@@ -65,7 +65,7 @@
         },
       });
       FLIPCARDS_AUTH.setToken(data.token, document.getElementById("remember").checked);
-      location.replace("../gada/app.html");
+      location.replace("../");
     } catch (ex) {
       err.textContent = ex.message || "Erreur";
     }

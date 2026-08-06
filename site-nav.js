@@ -24,7 +24,7 @@
         '<a data-nav="membre" href="' + abs("membre/") + '">Espace pédagogique</a>' +
       "</span>" +
       '<span class="site-nav-auth" hidden>' +
-        '<a class="site-nav-user" href="' + abs("gada/app.html") + '" title="Espace pédagogique">' +
+        '<a class="site-nav-user" href="' + abs("index.html") + '" title="Espace pédagogique">' +
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' +
             '<path d="M4 6h16v12H4z"/><path d="M4 8l8 6 8-6"/>' +
           "</svg>" +
