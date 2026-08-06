@@ -51,8 +51,8 @@
           a.classList.add("is-active");
         }
       } else if (key === "exercices") {
-        // actif aussi sur /demo/ et /gada/
-        if (cur === p || cur.indexOf("/demo") !== -1 || cur.indexOf("/gada") !== -1) {
+        // actif aussi sur /demo/ et /flipcards/
+        if (cur === p || cur.indexOf("/demo") !== -1 || cur.indexOf("/flipcards") !== -1) {
           a.classList.add("is-active");
         }
       } else if (cur === p || (p !== "/" && cur.startsWith(p + "/"))) {

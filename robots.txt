@@ -1,3 +1,4 @@
-User-agent: *
-Disallow: /gada/
+﻿User-agent: *
+Disallow: /flipcards/
 Allow: /demo/
+
