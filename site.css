@@ -1102,6 +1102,9 @@ input:focus {
 .manuel-prose {
   max-width: none;
   width: 100%;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 /* Aperçu Manuel (non-membre) — filtre global via site-nav.js */

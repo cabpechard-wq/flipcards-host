@@ -110,9 +110,47 @@
     wrap.hidden = false;
   }
 
+  function blockCopyOn(el) {
+    if (!el) return;
+    ["copy", "cut", "contextmenu", "selectstart", "dragstart"].forEach((ev) => {
+      el.addEventListener(ev, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+    });
+  }
+
+  function protectManuelCopy() {
+    const prose = document.querySelector("article.manuel-prose");
+    if (!prose) return;
+    blockCopyOn(prose);
+    blockCopyOn(document.querySelector(".manuel-content"));
+    document.addEventListener("keydown", (e) => {
+      if (!(e.ctrlKey || e.metaKey)) return;
+      const key = String(e.key || "").toLowerCase();
+      if (key !== "c" && key !== "x" && key !== "a" && key !== "s") return;
+      const sel = window.getSelection && window.getSelection();
+      if (!sel || sel.isCollapsed) {
+        if (key === "a" || key === "s") {
+          e.preventDefault();
+        }
+        return;
+      }
+      try {
+        const node = sel.anchorNode && (sel.anchorNode.nodeType === 3
+          ? sel.anchorNode.parentElement
+          : sel.anchorNode);
+        if (node && prose.contains(node)) e.preventDefault();
+      } catch (_) {
+        e.preventDefault();
+      }
+    });
+  }
+
   // Aperçu Manuel : verrouiller d'abord, déverrouiller si membre (évite le flash du texte complet)
   if (document.querySelector("article.manuel-prose")) {
     applyManuelPreview(false);
+    protectManuelCopy();
   }
   refreshAuth().then((me) => {
     applyManuelPreview(Boolean(me && me.email));
