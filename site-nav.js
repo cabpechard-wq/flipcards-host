@@ -46,8 +46,8 @@
       if (key === "home") {
         if (cur === p) a.classList.add("is-active");
       } else if (key === "ressources") {
-        // actif aussi sur /manuel/
-        if (cur === p || cur.indexOf("/manuel") !== -1 || cur.indexOf("/dictionnaire") !== -1) {
+        // Amphithéâtre uniquement (pas Manuel / Dictionnaire)
+        if (cur === p) {
           a.classList.add("is-active");
         }
       } else if (key === "exercices") {
