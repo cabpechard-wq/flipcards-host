@@ -149,6 +149,15 @@
     });
   }
 
+  // Infobulle titre complet sur les entrées tronquées du menu Manuel
+  document.querySelectorAll(".manuel-nav-side .nav-title").forEach((el) => {
+    const t = (el.textContent || "").trim();
+    if (t) {
+      const a = el.closest("a");
+      if (a && !a.getAttribute("title")) a.setAttribute("title", t);
+    }
+  });
+
   // Aperçu Manuel : verrouiller d'abord, déverrouiller si membre (évite le flash du texte complet)
   if (document.querySelector("article.manuel-prose")) {
     applyManuelPreview(false);
