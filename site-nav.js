@@ -196,6 +196,31 @@
     applyFlipcardsEntry(ok);
   });
 
+  function shouldShowErrorReport() {
+    const cur = location.pathname || "";
+    if (cur.indexOf("/manuel") !== -1) return true;
+    if (cur.indexOf("/dictionnaire") !== -1) return true;
+    if (cur.indexOf("/demo/") !== -1 || cur.endsWith("/demo")) return true;
+    if (cur.indexOf("/flipcards/") !== -1 || cur.endsWith("/flipcards")) return true;
+    return false;
+  }
+
+  if (shouldShowErrorReport()) {
+    const report = document.createElement("a");
+    report.className = "site-error-report";
+    report.href =
+      "mailto:cab.pechard@gmail.com"
+      + "?subject=" + encodeURIComponent("Signaler une erreur")
+      + "&body=" + encodeURIComponent(
+        "Bonjour,\n\nJe souhaite signaler une erreur sur la page suivante :\n"
+        + location.href
+        + "\n\nDescription :\n"
+      );
+    report.textContent = "Signaler une erreur";
+    report.setAttribute("aria-label", "Signaler une erreur par e-mail");
+    document.body.appendChild(report);
+  }
+
   const footer = document.createElement("footer");
   footer.className = "site-footer";
   footer.innerHTML =
