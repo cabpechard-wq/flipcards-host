@@ -47,7 +47,9 @@
         if (cur === p) a.classList.add("is-active");
       } else if (key === "ressources") {
         // actif aussi sur /manuel/
-        if (cur === p || cur.indexOf("/manuel") !== -1) a.classList.add("is-active");
+        if (cur === p || cur.indexOf("/manuel") !== -1 || cur.indexOf("/dictionnaire") !== -1) {
+          a.classList.add("is-active");
+        }
       } else if (key === "exercices") {
         // actif aussi sur /demo/ et /gada/
         if (cur === p || cur.indexOf("/demo") !== -1 || cur.indexOf("/gada") !== -1) {
