@@ -160,13 +160,40 @@
     }
   });
 
+  function applyFlipcardsEntry(isMember) {
+    document.querySelectorAll("[data-flipcards-entry]").forEach((el) => {
+      const typeEl = el.querySelector("[data-fc-type]");
+      const descEl = el.querySelector("[data-fc-desc]");
+      const ctaEl = el.querySelector("[data-fc-cta]");
+      if (isMember) {
+        el.setAttribute("href", abs("flipcards/app.html"));
+        if (typeEl) typeEl.textContent = "Accès membre";
+        if (descEl) {
+          descEl.textContent =
+            "Jeu complet des flipcards : tous les arrêts, filtres par thèmes et notions, mode étude.";
+        }
+        if (ctaEl) ctaEl.textContent = "Ouvrir les flipcards →";
+      } else {
+        el.setAttribute("href", abs("demo/"));
+        if (typeEl) typeEl.textContent = "Démo";
+        if (descEl) {
+          descEl.textContent =
+            "Cartes recto / verso sur la jurisprudence essentielle. Thèmes, notions clés, règles de droit et portée des arrêts.";
+        }
+        if (ctaEl) ctaEl.textContent = "Essayer la démo →";
+      }
+    });
+  }
+
   // Aperçu Manuel : verrouiller d'abord, déverrouiller si membre (évite le flash du texte complet)
   if (document.querySelector("article.manuel-prose")) {
     applyManuelPreview(false);
     protectManuelCopy();
   }
   refreshAuth().then((me) => {
-    applyManuelPreview(Boolean(me && me.email));
+    const ok = Boolean(me && me.email);
+    applyManuelPreview(ok);
+    applyFlipcardsEntry(ok);
   });
 
   const footer = document.createElement("footer");
