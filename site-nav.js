@@ -70,7 +70,7 @@
   });
 
   async function refreshAuth() {
-    if (!window.FLIPCARDS_AUTH) return;
+    if (!window.FLIPCARDS_AUTH) return null;
     const me = await FLIPCARDS_AUTH.requireSession();
     if (me && me.email) {
       guest.hidden = true;
@@ -81,9 +81,42 @@
       auth.hidden = true;
       emailEl.textContent = "";
     }
+    return me;
   }
 
-  refreshAuth();
+  function applyManuelPreview(isMember) {
+    const prose = document.querySelector("article.manuel-prose");
+    if (!prose) return;
+
+    let wrap = document.querySelector(".manuel-readmore-wrap");
+    if (isMember) {
+      prose.classList.remove("is-preview");
+      if (wrap) wrap.hidden = true;
+      return;
+    }
+
+    prose.classList.add("is-preview");
+    if (!wrap) {
+      wrap = document.createElement("p");
+      wrap.className = "manuel-readmore-wrap";
+      const a = document.createElement("a");
+      a.className = "manuel-readmore";
+      a.href = abs("membre/");
+      a.textContent = "Lire la suite";
+      a.setAttribute("aria-label", "Lire la suite — Espace pédagogique");
+      wrap.appendChild(a);
+      prose.insertAdjacentElement("afterend", wrap);
+    }
+    wrap.hidden = false;
+  }
+
+  // Aperçu Manuel : verrouiller d'abord, déverrouiller si membre (évite le flash du texte complet)
+  if (document.querySelector("article.manuel-prose")) {
+    applyManuelPreview(false);
+  }
+  refreshAuth().then((me) => {
+    applyManuelPreview(Boolean(me && me.email));
+  });
 
   const footer = document.createElement("footer");
   footer.className = "site-footer";
