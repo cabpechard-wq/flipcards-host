@@ -11,9 +11,30 @@
 </head>
 <body>
 <main class="site-main home-amphitheatre">
-  <p class="site-hero-kicker">Éditions Particulières</p>
-  <h1 class="site-title site-title-hero"><em>Droit</em> public<br>et administratif</h1>
-  <p class="site-lead">Ressources pédagogiques pour étudiants, juristes et curieux…</p>
+  <div class="home-hero">
+    <div class="home-hero-copy">
+      <p class="site-hero-kicker">Éditions Particulières</p>
+      <h1 class="site-title site-title-hero"><em>Droit</em> public<br>et administratif</h1>
+      <p class="site-lead">Ressources pédagogiques pour étudiants, juristes et curieux…</p>
+    </div>
+
+    <aside id="espace-membre" class="home-hero-access" aria-labelledby="espace-pedagogique-title">
+      <p class="site-hero-kicker">Accès &amp; Formules</p>
+      <h2 id="espace-pedagogique-title" class="home-hero-access-title">Espace pédagogique</h2>
+      <div class="home-hero-access-stack">
+        <div class="home-access-card">
+          <h3>Connexion</h3>
+          <p>Accès amphithéâtre et travaux dirigés avec e-mail et mot de passe.</p>
+          <a class="btn fill-secondary" href="./membre/">Se connecter</a>
+        </div>
+        <div class="home-access-card is-accent">
+          <h3>Inscriptions</h3>
+          <p>Mensuel ou semestriel, sans engagement. Paiement sécurisé via Stripe.</p>
+          <a class="btn outline-accent" href="./checkout/">Voir les offres</a>
+        </div>
+      </div>
+    </aside>
+  </div>
   <div class="home-rule" aria-hidden="true"></div>
 
   <div class="home-columns">
@@ -112,27 +133,6 @@
             <p class="ex-item-desc">Frises chronologiques de la jurisprudence administrative et trames de fiches pour structurer vos devoirs.</p>
           </div>
           <span class="ex-item-cta">À venir</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Colonne 4 : Espace pédagogique -->
-    <section id="espace-membre" class="home-col">
-      <div class="site-section-header">
-        <p class="site-hero-kicker">Accès &amp; Formules</p>
-        <h2>Espace pédagogique</h2>
-      </div>
-      <div class="home-col-stack">
-        <div class="site-card">
-          <h2>Connexion</h2>
-          <p>Accédez à l’amphithéâtre et aux travaux dirigés avec l’e-mail et le mot de passe choisis après inscription.</p>
-          <a class="btn fill-secondary" href="./membre/">Se connecter</a>
-        </div>
-
-        <div class="site-card orange">
-          <h2>Inscriptions</h2>
-          <p>Offres de lancement : mensuel ou semestriel, sans engagement. Paiement sécurisé via Stripe.</p>
-          <a class="btn outline-accent" href="./checkout/">Voir les offres</a>
         </div>
       </div>
     </section>
