@@ -22,6 +22,10 @@
 *::before,
 *::after { box-sizing: border-box; }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html, body {
   margin: 0;
   min-height: 100%;
@@ -165,13 +169,17 @@ a:hover { color: var(--accent-hover); }
 
 /* —— Page shell —— */
 .site-main {
-  width: min(52rem, calc(100% - 2rem));
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 2rem 0 0;
+  padding: 2rem 1.5rem 0;
 }
 
 .site-main.narrow {
   width: min(28rem, calc(100% - 2rem));
+  margin: 0 auto;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .site-crumb {
@@ -211,12 +219,81 @@ a:hover { color: var(--accent-hover); }
 }
 
 .site-lead {
-  margin: 0 0 1.75rem;
-  max-width: 38rem;
+  margin: 0 0 1.5rem;
+  max-width: 56rem;
   color: var(--muted);
-  font-size: .95rem;
+  font-size: .98rem;
   line-height: 1.55;
   font-weight: 500;
+}
+
+.site-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin: 0 0 2.25rem;
+}
+
+.site-subnav a {
+  display: inline-flex;
+  align-items: center;
+  padding: .35rem .75rem;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: 999px;
+  font-size: .8rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background .15s, color .15s;
+}
+
+.site-subnav a:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.site-section {
+  margin-bottom: 2.5rem;
+  scroll-margin-top: 4.5rem;
+}
+
+.site-section-header {
+  margin-bottom: .85rem;
+}
+
+.site-section-header h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+/* —— Home 3-column layout —— */
+.home-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+@media (max-width: 900px) {
+  .home-columns {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}
+
+.home-col {
+  display: flex;
+  flex-direction: column;
+  scroll-margin-top: 4.5rem;
+}
+
+.home-col-stack {
+  display: flex;
+  flex-direction: column;
+  gap: .85rem;
+  height: 100%;
 }
 
 .site-panel {
@@ -229,7 +306,7 @@ a:hover { color: var(--accent-hover); }
 .site-grid {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
 
 .site-card {
@@ -238,6 +315,11 @@ a:hover { color: var(--accent-hover); }
   border-left: 3px solid var(--accent);
   border-radius: var(--radius);
   padding: 1.15rem 1.2rem;
+}
+
+.site-card.secondary,
+.site-card.orange {
+  border-left-color: var(--secondary);
 }
 
 .site-card.test {
@@ -290,7 +372,8 @@ a:hover { color: var(--accent-hover); }
 /* —— Exercise catalog —— */
 .ex-list {
   display: grid;
-  gap: .65rem;
+  gap: .85rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   margin: 0 0 1.75rem;
 }
 
@@ -459,7 +542,8 @@ input:focus {
 }
 
 .site-footer-inner {
-  max-width: 44rem;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
@@ -635,6 +719,172 @@ input:focus {
   width: 38%;
   background: #fafafa;
   font-weight: 650;
+}
+
+/* —— Manuel (sommaire + chapitres imbriqués DP-XXX) —— */
+.manuel-aside-note {
+  margin: 0 0 1rem;
+  font-size: .85rem;
+  color: var(--muted);
+}
+
+.manuel-shell {
+  display: grid;
+  grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr);
+  gap: 2rem;
+  align-items: start;
+  margin-top: .5rem;
+}
+
+.manuel-nav {
+  margin: 1.25rem 0 0;
+  font-size: .88rem;
+}
+
+.manuel-nav-heading {
+  margin: 0 0 .65rem;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.manuel-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.manuel-nav li {
+  margin: 0;
+}
+
+.manuel-nav li ul {
+  margin: .15rem 0 .35rem .85rem;
+  padding-left: .65rem;
+  border-left: 1px solid var(--border);
+}
+
+.manuel-nav a {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: .35rem .65rem;
+  padding: .4rem .15rem;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 4px;
+}
+
+.manuel-nav a:hover .nav-title {
+  color: var(--accent);
+}
+
+.manuel-nav li.is-current > a {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.manuel-nav li.is-current > a .nav-title {
+  color: var(--accent);
+  font-weight: 650;
+}
+
+.manuel-nav .nav-ref {
+  flex: 0 0 auto;
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.manuel-nav .nav-title {
+  flex: 1 1 8rem;
+  line-height: 1.35;
+}
+
+.manuel-nav > ul > li > a .nav-title {
+  font-family: var(--font-display);
+  font-weight: 650;
+  font-size: .98rem;
+}
+
+.manuel-nav-side {
+  position: sticky;
+  top: 5.5rem;
+  max-height: calc(100vh - 6.5rem);
+  overflow: auto;
+  padding-right: .35rem;
+  margin-top: 0;
+  font-size: .8rem;
+}
+
+.manuel-content {
+  min-width: 0;
+}
+
+.manuel-prose {
+  max-width: 42rem;
+}
+
+@media (max-width: 900px) {
+  .manuel-shell {
+    grid-template-columns: 1fr;
+  }
+  .manuel-nav-side {
+    position: static;
+    max-height: none;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1rem;
+    margin-bottom: .5rem;
+  }
+}
+
+.manuel-chapternav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+  font-size: .85rem;
+  font-weight: 600;
+}
+
+.manuel-chapternav a {
+  text-decoration: none;
+}
+
+.manuel-chapternav-prev,
+.manuel-chapternav-next {
+  flex: 1;
+  min-width: 0;
+}
+
+.manuel-chapternav-next {
+  text-align: right;
+}
+
+.manuel-chapternav-toc {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.manuel-chapternav-toc:hover {
+  color: var(--accent);
+}
+
+.manuel-chapternav span {
+  display: block;
+  font-size: .68rem;
+  font-weight: 650;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: .15rem;
 }
 
 @media (max-width: 640px) {

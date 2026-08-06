@@ -21,12 +21,13 @@
   header.innerHTML =
     '<a class="site-nav-brand" href="' + abs("index.html") + '">' +
       '<span class="site-nav-kicker">Éditions Particulières</span>' +
-      '<span class="site-nav-product">Grands arrêts</span>' +
+      '<span class="site-nav-product">Droit public et administratif</span>' +
     "</a>" +
     '<nav class="site-nav-links" aria-label="Navigation">' +
       '<a data-nav="home" href="' + abs("index.html") + '">Accueil</a>' +
-      '<a data-nav="demo" href="' + abs("demo/") + '">Démo</a>' +
-      '<a data-nav="gada" href="' + abs("gada/app.html") + '">Flipcards</a>' +
+      '<a data-nav="ressources" href="' + abs("index.html#ressources") + '">Ressources</a>' +
+      '<a data-nav="manuel" href="' + abs("manuel/") + '">Manuel</a>' +
+      '<a data-nav="exercices" href="' + abs("index.html#exercices") + '">Exercices</a>' +
       '<a data-nav="checkout" href="' + abs("checkout/") + '">Abonnements</a>' +
       '<span class="site-nav-guest">' +
         '<a data-nav="membre" href="' + abs("membre/") + '">Connexion</a>' +
@@ -51,9 +52,12 @@
     try {
       const p = new URL(href).pathname.replace(/\/index\.html$/, "").replace(/\/+$/, "") || "/";
       const cur = location.pathname.replace(/\/index\.html$/, "").replace(/\/+$/, "") || "/";
+      const hash = location.hash;
       if (key === "home") {
-        if (cur === p) a.classList.add("is-active");
-      } else if (cur === p || cur.startsWith(p + "/")) {
+        if (cur === p && (!hash || hash === "#")) a.classList.add("is-active");
+      } else if (key === "exercices" || key === "ressources") {
+        if (cur === p && hash === "#" + key) a.classList.add("is-active");
+      } else if (cur === p || (p !== "/" && cur.startsWith(p + "/"))) {
         a.classList.add("is-active");
       }
     } catch (_) {}
@@ -90,7 +94,7 @@
   footer.innerHTML =
     '<div class="site-footer-inner">' +
       '<div class="site-footer-meta">' +
-        '<p class="site-footer-brand">Éditions Particulières — Grands arrêts du droit public et administratif</p>' +
+        '<p class="site-footer-brand">Éditions Particulières — Droit public et administratif</p>' +
         '<p class="site-footer-copy">© Éditions Particulières · Tous droits réservés · Reproductions / exportations interdites</p>' +
       "</div>" +
       '<nav class="site-footer-links" aria-label="Informations légales">' +
