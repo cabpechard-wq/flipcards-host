@@ -3,37 +3,35 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Abonnements — Grands arrêts</title>
+<title>Inscriptions — Droit public et administratif</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../site.css">
 </head>
 <body>
 <main class="site-main">
   <p class="site-crumb">
-    <span>Droit public et administratif</span>
+    <a href="../">Droit public et administratif</a>
     <span class="sep">›</span>
-    <a href="../">Grands arrêts</a>
-    <span class="sep">›</span>
-    <strong>Abonnements</strong>
+    <strong>Inscriptions</strong>
   </p>
-  <p class="site-hero-kicker">Accès abonné</p>
-  <h1 class="site-title">Abonnements</h1>
-  <p class="site-lead">Débloque Flipcards (et les prochains exercices de la collection). Résiliable à tout moment.</p>
+  <p class="site-hero-kicker text-secondary">Offres de lancement</p>
+  <h1 class="site-title">Inscriptions</h1>
+  <p class="site-lead">Accès à l’amphithéâtre et aux travaux dirigés.<br>Résiliable à tout moment.</p>
 
   <div class="site-grid">
     <div class="site-card">
       <h2>Mensuel</h2>
       <div class="site-price">6,90 €<span> / mois</span></div>
-      <p>Accès complet + mises à jour pendant l’abonnement.</p>
+      <p>Accès complet et mises à jour.</p>
       <a class="btn" id="btn-monthly" href="#configure" aria-disabled="true">Choisir mensuel</a>
     </div>
-    <div class="site-card">
-      <h2>Annuel</h2>
-      <div class="site-price">59 €<span> / an</span></div>
-      <p>≈ 2 mois offerts. Idéal pour l’année universitaire.</p>
-      <a class="btn" id="btn-yearly" href="#configure" aria-disabled="true">Choisir annuel</a>
+    <div class="site-card orange">
+      <h2>Semestriel</h2>
+      <div class="site-price">30,90 €<span> / semestre</span></div>
+      <p class="text-secondary" style="font-weight:650">25&nbsp;% de réduction supplémentaires.</p>
+      <a class="btn" id="btn-yearly" href="#configure" aria-disabled="true">Choisir semestriel</a>
     </div>
   </div>
 
@@ -47,7 +45,7 @@
       en renonçant expressément à mon droit de rétractation une fois l’accès délivré.
     </span>
   </label>
-  <p class="site-note" id="cgv-hint">Cochez la case pour activer le paiement. Une confirmation équivalente sera aussi demandée sur Stripe.</p>
+  <p class="site-note" id="cgv-hint">Cochez la case pour activer le paiement.</p>
   <p class="site-foot"><a class="btn secondary" href="../demo/">Essayer la démo (8 cartes)</a></p>
 </main>
 <script>
@@ -124,6 +122,6 @@ window.FLIPCARDS_CHECKOUT = {
 })();
 </script>
 <script src="../auth.js?v=4"></script>
-<script src="../site-nav.js?v=3"></script>
+<script src="../site-nav.js?v=5"></script>
 </body>
 </html>

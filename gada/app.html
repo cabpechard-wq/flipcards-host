@@ -5651,6 +5651,47 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+const RECTO_TO_IDX = new Map(DATA.map((c, idx) => [c.recto, idx]));
+
+function findCardIndex(query) {
+  if (!query) return -1;
+  const q = decodeURIComponent(String(query)).trim();
+  if (RECTO_TO_IDX.has(q)) return RECTO_TO_IDX.get(q);
+  const lower = q.toLowerCase();
+  for (const [recto, idx] of RECTO_TO_IDX) {
+    if (recto.toLowerCase() === lower) return idx;
+  }
+  return -1;
+}
+
+function enterGameWithCard(idx) {
+  if (idx < 0 || idx >= DATA.length) return;
+  stopPlay();
+  shuffled = false;
+  shuffleBtn.classList.remove('active');
+  shuffleBtn.setAttribute('aria-pressed', 'false');
+  studyPool = [idx];
+  rebuildOrder();
+  i = 0;
+  flipped = false;
+  renderGameSummary({ random10: false, n: 1, poolSize: 1 });
+  home.hidden = true;
+  game.hidden = false;
+  inGame = true;
+  appWrap.classList.add('is-study');
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function applyDeepLink() {
+  const params = new URLSearchParams(location.search);
+  const card = params.get('card') || params.get('recto');
+  if (!card) return;
+  const idx = findCardIndex(card);
+  if (idx >= 0) enterGameWithCard(idx);
+}
+
+applyDeepLink();
 updateHomeCount();
 </script>
 <script src="../auth.js?v=4"></script>

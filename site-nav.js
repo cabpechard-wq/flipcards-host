@@ -8,14 +8,6 @@
     return new URL(path.replace(/^\//, ""), root).href;
   }
 
-  function pathIs(path) {
-    try {
-      return location.pathname.replace(/\/+$/, "") === new URL(path, root).pathname.replace(/\/+$/, "");
-    } catch (_) {
-      return false;
-    }
-  }
-
   const header = document.createElement("header");
   header.className = "site-nav";
   header.innerHTML =
@@ -25,15 +17,14 @@
     "</a>" +
     '<nav class="site-nav-links" aria-label="Navigation">' +
       '<a data-nav="home" href="' + abs("index.html") + '">Accueil</a>' +
-      '<a data-nav="ressources" href="' + abs("index.html#ressources") + '">Ressources</a>' +
-      '<a data-nav="manuel" href="' + abs("manuel/") + '">Manuel</a>' +
-      '<a data-nav="exercices" href="' + abs("index.html#exercices") + '">Exercices</a>' +
-      '<a data-nav="checkout" href="' + abs("checkout/") + '">Abonnements</a>' +
+      '<a data-nav="ressources" href="' + abs("ressources/") + '">Amphi\'</a>' +
+      '<a data-nav="exercices" href="' + abs("exercices/") + '">Salles de TD</a>' +
+      '<a data-nav="checkout" href="' + abs("checkout/") + '">Inscriptions</a>' +
       '<span class="site-nav-guest">' +
-        '<a data-nav="membre" href="' + abs("membre/") + '">Connexion</a>' +
+        '<a data-nav="membre" href="' + abs("membre/") + '">Espace pédagogique</a>' +
       "</span>" +
       '<span class="site-nav-auth" hidden>' +
-        '<a class="site-nav-user" href="' + abs("gada/app.html") + '" title="Espace abonné">' +
+        '<a class="site-nav-user" href="' + abs("gada/app.html") + '" title="Espace pédagogique">' +
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' +
             '<path d="M4 6h16v12H4z"/><path d="M4 8l8 6 8-6"/>' +
           "</svg>" +
@@ -52,11 +43,16 @@
     try {
       const p = new URL(href).pathname.replace(/\/index\.html$/, "").replace(/\/+$/, "") || "/";
       const cur = location.pathname.replace(/\/index\.html$/, "").replace(/\/+$/, "") || "/";
-      const hash = location.hash;
       if (key === "home") {
-        if (cur === p && (!hash || hash === "#")) a.classList.add("is-active");
-      } else if (key === "exercices" || key === "ressources") {
-        if (cur === p && hash === "#" + key) a.classList.add("is-active");
+        if (cur === p) a.classList.add("is-active");
+      } else if (key === "ressources") {
+        // actif aussi sur /manuel/
+        if (cur === p || cur.indexOf("/manuel") !== -1) a.classList.add("is-active");
+      } else if (key === "exercices") {
+        // actif aussi sur /demo/ et /gada/
+        if (cur === p || cur.indexOf("/demo") !== -1 || cur.indexOf("/gada") !== -1) {
+          a.classList.add("is-active");
+        }
       } else if (cur === p || (p !== "/" && cur.startsWith(p + "/"))) {
         a.classList.add("is-active");
       }
