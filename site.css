@@ -721,13 +721,7 @@ input:focus {
   font-weight: 650;
 }
 
-/* —— Manuel (sommaire + chapitres imbriqués DP-XXX) —— */
-.manuel-aside-note {
-  margin: 0 0 1rem;
-  font-size: .85rem;
-  color: var(--muted);
-}
-
+/* —— Manuel (sommaire + chapitres imbriqués) —— */
 .manuel-shell {
   display: grid;
   grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr);
@@ -788,15 +782,6 @@ input:focus {
 .manuel-nav li.is-current > a .nav-title {
   color: var(--accent);
   font-weight: 650;
-}
-
-.manuel-nav .nav-ref {
-  flex: 0 0 auto;
-  font-size: .65rem;
-  font-weight: 700;
-  letter-spacing: .04em;
-  color: var(--muted);
-  white-space: nowrap;
 }
 
 .manuel-nav .nav-title {
