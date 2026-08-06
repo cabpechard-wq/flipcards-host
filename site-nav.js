@@ -51,8 +51,10 @@
           a.classList.add("is-active");
         }
       } else if (key === "exercices") {
-        // actif aussi sur /demo/ et /flipcards/
-        if (cur === p || cur.indexOf("/demo") !== -1 || cur.indexOf("/flipcards") !== -1) {
+        // actif sur /exercices/, /demo/, /flipcards/ (pas /flipcards-host/)
+        const onDemo = cur.indexOf("/demo/") !== -1 || cur.endsWith("/demo");
+        const onFlip = cur.indexOf("/flipcards/") !== -1 || cur.endsWith("/flipcards");
+        if (cur === p || onDemo || onFlip) {
           a.classList.add("is-active");
         }
       } else if (cur === p || (p !== "/" && cur.startsWith(p + "/"))) {
