@@ -872,7 +872,7 @@ input:focus {
 /* —— Manuel (sommaire + chapitres imbriqués) —— */
 .manuel-shell {
   display: grid;
-  grid-template-columns: minmax(12rem, 14.5rem) minmax(0, 1fr);
+  grid-template-columns: minmax(16rem, 22rem) minmax(0, 1fr);
   gap: clamp(1.75rem, 4vw, 3.5rem);
   align-items: start;
   margin-top: .5rem;
@@ -1012,7 +1012,7 @@ input:focus {
   border: 0;
   border-right: 1px solid rgba(196, 163, 90, .14);
   background: transparent;
-  font-size: .8rem;
+  font-size: .76rem;
   scrollbar-width: thin;
   scrollbar-color: rgba(196, 163, 90, .28) transparent;
 }
@@ -1036,10 +1036,11 @@ input:focus {
 
 .manuel-nav-side > ul > li > a .nav-title {
   font-family: var(--font-display);
-  font-size: 1rem;
+  font-size: .95rem;
   font-weight: 600;
   color: var(--ink);
   line-height: 1.3;
+  white-space: nowrap;
 }
 
 .manuel-nav-side a {
@@ -1049,6 +1050,7 @@ input:focus {
   background: transparent;
   border-radius: 0;
   transition: color .15s;
+  white-space: nowrap;
 }
 
 .manuel-nav-side a:hover {
@@ -1073,9 +1075,12 @@ input:focus {
 }
 
 .manuel-nav-side .nav-title {
+  flex: none;
+  display: inline;
   font-weight: 400;
   color: var(--muted);
-  line-height: 1.4;
+  line-height: 1.35;
+  white-space: nowrap;
 }
 
 .manuel-nav-side a:hover .nav-title {
